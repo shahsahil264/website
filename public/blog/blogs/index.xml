@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blogs on Krkn</title>
+    <link>//localhost:1313/blog/blogs/</link>
+    <description>Recent content in Blogs on Krkn</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 01 Oct 2021 00:00:00 +0000</lastBuildDate>
+    <atom:link href="//localhost:1313/blog/blogs/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Articles</title>
+      <link>//localhost:1313/blog/2021/10/01/articles/</link>
+      <pubDate>Fri, 01 Oct 2021 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/blog/2021/10/01/articles/</guid>
+      <description>Presentations and Blogs Blog post on introduction to Kraken: https://www.openshift.com/blog/introduction-to-kraken-a-chaos-tool-for-openshift/kubernetes Discussion and demo on how Kraken can be leveraged to ensure OpenShift is reliable, performant and scalable: https://www.youtube.com/watch?v=s1PvupI5sD0&amp;ab_channel=OpenShift Blog post emphasizing the importance of making Chaos part of Performance and Scale runs to mimic the production environments: https://www.openshift.com/blog/making-chaos-part-of-kubernetes/openshift-performance-and-scalability-tests Blog post on OpenShift Chaos Stories - findings from test runs: https://cloud.redhat.com/blog/openshift/kubernetes-chaos-stories Chaos Testing Guide Guide covering the best practices, recommendations that an OpenShift platform as well as the applications running on top it should follow to be resilient, performant and reliable in addition to instructions on how to leverage tooling to achieve it: https://redhat-chaos.</description>
+    </item>
+  </channel>
+</rss>

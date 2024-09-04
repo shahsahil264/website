@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Docs on Krkn</title>
+    <link>//localhost:50777/tags/docs/</link>
+    <description>Recent content in Docs on Krkn</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 03 Sep 2024 17:00:47 -0400</lastBuildDate>
+    <atom:link href="//localhost:50777/tags/docs/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Installation</title>
+      <link>//localhost:50777/docs/getting-started/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>//localhost:50777/docs/getting-started/</guid>
+      <description>The following ways are supported to run Kraken:&#xA;Standalone python program through Git. Containerized version using either Podman or Docker as the runtime via Krkn-hub Kubernetes or OpenShift deployment ( unsupported ) Note It is recommended to run Kraken external to the cluster ( Standalone or Containerized ) hitting the Kubernetes/OpenShift API as running it internal to the cluster might be disruptive to itself and also might not report back the results if the chaos leads to cluster’s API server instability.</description>
+    </item>
+    <item>
+      <title>Test Strategies and Methodology</title>
+      <link>//localhost:50777/docs/testing-methodology/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>//localhost:50777/docs/testing-methodology/</guid>
+      <description>Failures in production are costly. To help mitigate risk to service health, consider the following strategies and approaches to service testing:&#xA;Be proactive vs reactive. We have different types of test suites in place - unit, integration and end-to-end - that help expose bugs in code in a controlled environment. Through implementation of a chaos engineering strategy, we can discover potential causes of service degradation. We need to understand the systems’ behavior under unpredictable conditions in order to find the areas to harden, and use performance data points to size the clusters to handle failures in order to keep downtime to a minimum.</description>
+    </item>
+    <item>
+      <title>krkn-hub</title>
+      <link>//localhost:50777/docs/getting-started/krkn-hub/</link>
+      <pubDate>Thu, 05 Jan 2017 00:00:00 +0000</pubDate>
+      <guid>//localhost:50777/docs/getting-started/krkn-hub/</guid>
+      <description>Hosts container images and wrapper for running scenarios supported by Krkn, a chaos testing tool for Kubernetes clusters to ensure it is resilient to failures. All we need to do is run the containers with the respective environment variables defined as supported by the scenarios without having to maintain and tweak files!&#xA;Set Up You can use docker or podman to run kraken-hub&#xA;Install Podman your certain operating system based on these instructions</description>
+    </item>
+    <item>
+      <title>Best Practices</title>
+      <link>//localhost:50777/docs/testing-methodology/example-page/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>//localhost:50777/docs/testing-methodology/example-page/</guid>
+      <description>Now that we understand the test methodology, let us take a look at the best practices for an Kubernetes cluster. On that platform there are user applications and cluster workloads that need to be designed for stability and to provide the best user experience possible:&#xA;Alerts with appropriate severity should get fired.&#xA;Alerts are key to identify when a component starts degrading, and can help focus the investigation effort on affected system components.</description>
+    </item>
+  </channel>
+</rss>
