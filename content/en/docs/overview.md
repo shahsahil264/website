@@ -4,21 +4,6 @@ description: Chaos and Resiliency Testing Tool for Kubernetes
 weight: 1
 ---
 
-<!-- {{% pageinfo %}} -->
-
-
-
-<!-- {{% /pageinfo %}} -->
-<!-- 
-The Overview is where your users find out about your project. Depending on the
-size of your docset, you can have a separate overview page (like this one) or
-put your overview contents in the Documentation landing page (like in the Docsy
-User Guide).
-
-Try answering these questions for your user in this page: -->
-
-<!-- ## Introduction -->
-
 **krkn** is a chaos and resiliency testing tool for Kubernetes. Kraken injects deliberate failures into Kubernetes clusters to check if it is resilient to turbulent conditions.
 
 ## Why do I want it?
@@ -52,5 +37,5 @@ How can we best avoid this from happening? This is where **Chaos testing** can a
 
 Give your users next steps from the Overview. For example:
 
-- [Getting Started](/docs/getting-started/): Get started using krkn!
-- [Examples](/docs/examples/): Check out some example code!
+- [Installation](/docs/installation/): Get started using krkn!
+- [Scenarios](/docs/scenarios/): Check out the scenarios we offer!
