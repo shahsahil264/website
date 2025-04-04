@@ -10,8 +10,8 @@ weight: 2
 This is a placeholder page that shows you how to use this template site.
 {{% /pageinfo %}} -->
 
-The following ways are supported to run Kraken:
-- Standalone python program through Git.
+The following ways are supported to run Krkn:
+- Standalone python program through Git - See specific documentation for [krkn](/docs/installation/krkn.md)
 - Containerized version using either Podman or Docker as the runtime via [Krkn-hub](/docs/installation/krkn-hub.md)
 - Kubernetes or OpenShift deployment ( unsupported )
 
