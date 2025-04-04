@@ -17,16 +17,42 @@ The following node chaos scenarios are supported:
 9. **node_crash_scenario**: Scenario to crash the node instance.
 10. **stop_start_helper_node_scenario**: Scenario to stop and start the helper node and check service status.
 
+
+Supported cloud supported: 
+- [AWS](#aws)
+- [Azure](#azure)
+- [OpenStack](#openstack)
+- [BareMetal](#baremetal)
+- [GCP](#gcp)
+- [VMware](#vmware)
+- [Alibaba](#alibaba)
+- [Docker](#docker)
+- [IBMCloud](#ibmcloud)
+
 {{% alert title="Note" %}}If the node does not recover from the node_crash_scenario injection, reboot the node to get it back to Ready state. {{% /alert %}}
 
-{{% alert title="Note" %}}node_start_scenario, node_stop_scenario, node_stop_start_scenario, node_termination_scenario
-, node_reboot_scenario and stop_start_kubelet_scenario are supported on AWS, Azure, OpenStack, BareMetal, GCP
-, VMware and Alibaba.
+{{% alert title="Note" %}}node_start_scenario, node_stop_scenario, node_stop_start_scenario, node_termination_scenario, node_reboot_scenario and stop_start_kubelet_scenario are supported on 
+- AWS
+- Azure
+- OpenStack
+- BareMetal
+- GCP
+- VMware
+- Alibaba
+- IbmCloud
 {{% /alert %}}
+
+
+#### General
+{{% alert title="Note" %}} The `node_crash_scenario` and `stop_kubelet_scenario` scenario is supported independent of the cloud platform.{{% /alert %}}
+
+Use 'generic' or do not add the 'cloud_type' key to your scenario if your cluster is not set up using one of the current supported cloud types.
+
 
 #### AWS
 
-Cloud setup instructions can be found [here](/docs/scenarios/cloud_setup.md#aws). Sample scenario config can be found [here](https://github.com/krkn-chaos/krkn/blob/main/scenarios/openshift/aws_node_scenarios.yml).
+Cloud setup instructions can be found [here](/docs/scenarios/cloud_setup.md#aws). 
+Sample scenario config can be found [here](https://github.com/krkn-chaos/krkn/blob/main/scenarios/openshift/aws_node_scenarios.yml).
 
 
 
@@ -48,8 +74,6 @@ See the example node scenario or the example below.{{% /alert %}}
 
 
 
-
-
 #### Docker
 
 The Docker provider can be used to run node scenarios against kind clusters.
@@ -57,7 +81,6 @@ The Docker provider can be used to run node scenarios against kind clusters.
 [kind](https://kind.sigs.k8s.io/) is a tool for running local Kubernetes clusters using Docker container "nodes".
 
 kind was primarily designed for testing Kubernetes itself, but may be used for local development or CI.
-
 
 
 #### GCP
@@ -91,31 +114,13 @@ How to set up Alibaba cli to run node scenarios is defined [here](/docs/scenario
 {{% alert title="Note" %}} There is no "terminating" idea in Alibaba, so any scenario with terminating will "release" the node
 . Releasing a node is 2 steps, stopping the node and then releasing it.{{% /alert %}}
 
+
 #### VMware
 How to set up VMware vSphere to run node scenarios is defined [here](/docs/scenarios/cloud_setup.md#vmware)
-
-This cloud type uses a different configuration style, see actions below and [example config file](https://github.com/krkn-chaos/krkn/blob/main/scenarios/openshift/vmware_node_scenarios.yml)
-
-- vmware-node-terminate
-- vmware-node-reboot
-- vmware-node-stop
-- vmware-node-start
 
 
 
 #### IBMCloud
 How to set up IBMCloud to run node scenarios is defined [here](/docs/scenarios/cloud_setup.md#ibmcloud)
 
-This cloud type uses a different configuration style, see actions below and [example config file](https://github.com/krkn-chaos/krkn/blob/main/scenarios/openshift/ibmcloud_node_scenarios.yml)
-
-- ibmcloud-node-terminate
-- ibmcloud-node-reboot
-- ibmcloud-node-stop
-- ibmcloud-node-start
-
-
-
-#### General
-{{% alert title="Note" %}} The `node_crash_scenario` and `stop_kubelet_scenario` scenario is supported independent of the cloud platform.{{% /alert %}}
-
-Use 'generic' or do not add the 'cloud_type' key to your scenario if your cluster is not set up using one of the current supported cloud types.
+See a sample of ibm cloud node scenarios [example config file](https://github.com/krkn-chaos/krkn/blob/main/scenarios/openshift/ibmcloud_node_scenarios.yml)
