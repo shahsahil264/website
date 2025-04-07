@@ -25,3 +25,4 @@ weight: 3
 | [Network Chaos](docs/scenarios/network-chaos-scenario/_index.md) | Introduces network latency, packet loss, bandwidth restriction in the egress traffic of a Node's interface using tc and Netem |
 | [Pod Network Chaos](docs/scenarios/pod-network-scenario/_index.md) | Introduces network chaos at pod level                        | 
 | [Service Hijacking](docs/scenarios/service-hijacking-scenario/_index.md) | Hijacks a service http traffic to simulate custom HTTP responses |
+| [Syn Flood](docs/scenarios/syn-flood-scenario/_index.md) | Generates a substantial amount of TCP traffic directed at one or more Kubernetes services |
