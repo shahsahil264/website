@@ -1,4 +1,9 @@
-### Signaling to Kraken
+---
+title: Signaling to Krkn
+description: Signal to stop/start/pause krkn
+weight: 2
+---
+
 This functionality allows a user to be able to pause or stop the kraken run at any time no matter the number of iterations or daemon_mode set in the config.
 
 If publish_kraken_status is set to True in the config, kraken will start up a connection to a url at a certain port to decide if it should continue running.
@@ -9,7 +14,7 @@ An example use case for this feature would be coordinating kraken runs based on 
 
 
 
-#### States
+## States
 There are 3 states in the kraken status:
 
 ```PAUSE```: When the Kraken signal is 'PAUSE', this will pause the kraken test and wait for the wait_duration until the signal returns to RUN.
@@ -20,7 +25,7 @@ There are 3 states in the kraken status:
 
 
 
-#### Configuration
+## Configuration
 
 In the config you need to set these parameters to tell kraken which port to post the kraken run status to.
 As well if you want to publish and stop running based on the kraken status or not.
@@ -32,7 +37,7 @@ The signal is set to `RUN` by default, meaning it will continue to run the scena
 ```
 
 
-#### Setting Signal
+### Setting Signal
 
 You can reset the kraken status during kraken execution with a `set_stop_signal.py` script with the following contents:
 
@@ -53,7 +58,7 @@ print(response.read().decode())
 
 Make sure to set the correct port number in your set_stop_signal script.
 
-##### Url Examples
+### Url Examples
 To stop run:
 
 ```bash

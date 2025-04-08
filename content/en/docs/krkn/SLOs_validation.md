@@ -1,3 +1,9 @@
+---
+title: SLO Validation
+description: Validation points in krkn
+weight: 2
+---
+
 ## SLOs validation
 
 Pass/fail based on metrics captured from the cluster is important in addition to checking the health status and recovery. Kraken supports:
