@@ -26,6 +26,13 @@ $ pip3.9 install -r requirements.txt
 {{% alert title="Note" %}} Make sure python3-devel and latest pip versions are installed on the system. The dependencies install has been tested with pip >= 21.1.3 versions.{{% /alert %}}
 Where can your user find your project code? How can they install it (binaries, installable package, build from source)? Are there multiple options/versions they can install and how should they choose the right one for them?
 
+## Getting Started with Krkn
+If you are wanting to try to edit your config file and scenarios 
+
+
+
+
+
 ## Running Krkn
 
 ```bash

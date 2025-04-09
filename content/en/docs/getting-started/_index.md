@@ -1,0 +1,33 @@
+---
+title: Getting Started
+# date: 2017-01-05
+description: 
+weight : 3
+categories: [Best Practices, Placeholders]
+tags: [docs]
+---
+
+Welcome to Krkn-Chaos organization! Below is a flow chart of all the krkn related repositories in the github organization. They all build on eachother with krkn-lib being the lowest level of kubernetes based functions to full running scenarios and demos and documentations
+
+![krkn repo flowchart](images/krkn-repo-flowchart.png)
+
+
+How to:
+* [Get started with Krkn-lib](#krkn-lib)
+* [Get started with Krkn](#krkn)
+* [Get started with Krkn-hub](#krkn-hub)
+
+## Krkn-lib
+See how to install krkn-lib [here](../installation/krkn-lib.md)
+
+## Krkn
+Get krkn set up with the help of these [directions](../installation/krkn.md)
+
+See these [helpful hints](getting-started-krkn.md) on easy edits to the scenarios and config file to start running your own chaos scenarios
+
+
+## Krkn-hub
+Set up krkn-hub based on these [directions](../installation/krkn-hub.md)
+
+Test your changes using setup and how to run instructions [here](../contribution-guidelines/testing-changes.md#editing-a-new-scenario-to-krkn-hub)
+

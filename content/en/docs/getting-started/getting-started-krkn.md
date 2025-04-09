@@ -1,3 +1,12 @@
+---
+title: Getting Started with Krkn
+# date: 2017-01-05
+description: 
+weight : 2
+categories: [Best Practices, Placeholders]
+tags: [docs]
+---
+
 ## Getting Started Running Chaos Scenarios
 
 
@@ -49,7 +58,7 @@ time_scenarios:
 If you just want to make small changes to pre-existing scenarios, feel free to edit the scenario file itself.
 
 #### Example of Quick Pod Scenario Edit:
-If you want to kill 2 pods instead of 1 in any of the pre-existing scenarios, you can either edit the number located at filters -> randomSample -> size or the runs under the config -> runStrategy section.
+If you want to kill 2 pods instead of 1 in any of the pre-existing scenarios, you can either edit the number located at config ->  label_selector and/or namespace_pattern
 
 #### Example of Quick Nodes Scenario Edit:
-If your cluster is build on GCP instead of AWS, just change the cloud type in the node_scenarios_example.yml file.
+If your cluster is build on GCP instead of AWS, just change the cloud type in the [node_scenarios_example.yml](https://github.com/krkn-chaos/krkn/blob/main/scenarios/openshift/aws_node_scenarios.yml) file.

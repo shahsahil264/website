@@ -1,6 +1,7 @@
 ---
+type: "docs/scenarios"
 title: Installation
-description: 
+description: Details on how to install krkn and krkn-hub
 categories: [Installation]
 tags: [install, docs]
 weight: 2
