@@ -2,7 +2,6 @@
 title: Node Network Filter
 description: >
 date: 2017-01-05
-weight: 4
 ---
 
 ## Overview

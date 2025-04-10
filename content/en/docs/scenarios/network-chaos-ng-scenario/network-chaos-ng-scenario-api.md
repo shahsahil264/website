@@ -2,7 +2,6 @@
 title: Network Chaos API
 description: >
 date: 2017-01-05
-weight: 4
 ---
 
 ## `AbstractNetworkChaosModule` abstract module class

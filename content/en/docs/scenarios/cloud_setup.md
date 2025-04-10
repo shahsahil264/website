@@ -2,7 +2,7 @@
 title: Supported Cloud Providers
 description: >
 date: 2017-01-05
-weight: 15
+weight: 1
 ---
 - [AWS](#aws)
 - [GCP](#gcp)

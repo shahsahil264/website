@@ -2,7 +2,6 @@
 title: Container Scenarios
 description: 
 date: 2017-01-04
-weight: 1
 ---
 
 Kraken uses the `oc exec` command to `kill` specific containers in a pod.

@@ -2,13 +2,13 @@
 title: All Scenarios Variables
 description: >
 date: 2017-01-05
-weight: 4
+weight: 1
 ---
-These variables are to be used for the top level configuration template that are shared by all the scenarios 
+These variables are to be used for the top level configuration template that are shared by all the scenarios in Krkn-hub
 
 See the description and default values below 
 
-#### Supported parameters
+#### Supported parameters for all scenarios in Krkn-Hub
 
 The following environment variables can be set on the host running the container to tweak the scenario/faults being injected:
 
@@ -25,10 +25,10 @@ DAEMON_MODE             | Iterations are set to infinity which means that the kr
 PUBLISH_KRAKEN_STATUS              | If you want                         | True                                    |
 SIGNAL_ADDRESS              | Address to print kraken status to                          | 0.0.0.0                                    |
 PORT              | Port to print kraken status to                             | 8081                                    |         |
-SIGNAL_STATE      | Waits for the RUN signal when set to PAUSE before running the scenarios, refer [docs](https://github.com/redhat-chaos/krkn/blob/master/docs/signal.md) for more details | RUN |
+SIGNAL_STATE      | Waits for the RUN signal when set to PAUSE before running the scenarios, refer [docs](https://github.com/krkn-chaos/krkn/blob/master/docs/signal.md) for more details | RUN |
 DEPLOY_DASHBOARDS | Deploys mutable grafana loaded with dashboards visualizing performance metrics pulled from in-cluster prometheus. The dashboard will be exposed as a route. | False |
-CAPTURE_METRICS   | Captures metrics as specified in the profile from in-cluster prometheus. Default metrics captures are listed [here](https://github.com/redhat-chaos/krkn/blob/master/config/metrics-aggregated.yaml) | False |
-ENABLE_ALERTS     | Evaluates expressions from in-cluster prometheus and exits 0 or 1 based on the severity set. [Default profile](https://github.com/redhat-chaos/krkn/blob/master/config/alerts). More details can be found [here](https://github.com/redhat-chaos/krkn#alerts) | False |
+CAPTURE_METRICS   | Captures metrics as specified in the profile from in-cluster prometheus. Default metrics captures are listed [here](https://github.com/krkn-chaos/krkn/blob/master/config/metrics-aggregated.yaml) | False |
+ENABLE_ALERTS     | Evaluates expressions from in-cluster prometheus and exits 0 or 1 based on the severity set. [Default profile](https://github.com/krkn-chaos/krkn/blob/master/config/alerts.yaml). | False |
 ALERTS_PATH       | Path to the alerts file to use when ENABLE_ALERTS is set | config/alerts |
 CHECK_CRITICAL_ALERTS | When enabled will check prometheus for critical alerts firing post chaos | False |
 TELEMETRY_ENABLED | Enable/disables the telemetry collection feature | False |
