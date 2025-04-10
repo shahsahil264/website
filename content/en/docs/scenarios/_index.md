@@ -1,7 +1,7 @@
 ---
 type: "docs/scenarios"
 title: Scenarios
-description: 
+description: Krkn scenario list
 date: 2017-01-04
 weight: 4
 ---

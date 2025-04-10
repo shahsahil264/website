@@ -1,6 +1,6 @@
 ---
 title: Cerberus
-description: 
+description: "Guardian of kubernetes"
 categories: [Examples, Placeholders]
 tags: [test, docs]
 weight: 6

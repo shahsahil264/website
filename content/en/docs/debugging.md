@@ -1,5 +1,6 @@
 ---
 title: Krkn Debugging Tips
+description: Common helpful tips if you hit issues running krkn
 weight: 10
 ---
 

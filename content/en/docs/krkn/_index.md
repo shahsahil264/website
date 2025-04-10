@@ -1,5 +1,5 @@
 ---
-title: krkn
+title: What is Krkn?
 description: Chaos and Resiliency Testing Tool for Kubernetes
 weight: 1
 ---

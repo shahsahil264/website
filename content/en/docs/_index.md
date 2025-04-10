@@ -1,5 +1,6 @@
 ---
 title: krkn-chaos
+description: Krkn
 linkTitle: Documentation
 menu: {main: {weight: 20}}
 ---

@@ -1,6 +1,6 @@
 ---
 title: Chaos Testing Guide
-description: 
+description: Chaos testing guide with strategies and methodologies
 categories: 
 tags: 
 weight: 4
