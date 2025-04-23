@@ -15,7 +15,7 @@ Cerberus watches the Kubernetes/OpenShift clusters for dead nodes, system compon
 
 
 ### Installation
-Instructions on how to setup, configure and run Cerberus can be found at [Installation](docs/cerberus/installation.md).
+Instructions on how to setup, configure and run Cerberus can be found at [Installation](installation.md).
 
 
 
@@ -33,7 +33,7 @@ CSRs                                 | Warns if any CSRs are not approved       
 Critical Alerts                      | Warns the user on observing abnormal behavior which might effect the health of the cluster                       | :heavy_check_mark:        |
 Bring your own checks                | Users can bring their own checks and Ceberus runs and includes them in the reporting as wells as go/no-go signal | :heavy_check_mark:        |
 
-An explanation of all the components that Cerberus can monitor are explained [here](docs/cerberus/config.md)
+An explanation of all the components that Cerberus can monitor are explained [here](config.md)
 
 ### How does Cerberus report cluster health?
 Cerberus exposes the cluster health and failures through a go/no-go signal, report and metrics API.
@@ -42,7 +42,7 @@ Cerberus exposes the cluster health and failures through a go/no-go signal, repo
 When the cerberus is configured to run in the daemon mode, it will continuosly monitor the components specified, runs a light weight http server at http://0.0.0.0:8080 and publishes the signal i.e True or False depending on the components status. The tools can consume the signal and act accordingly.
 
 #### Report
-The report is generated in the run directory and it contains the information about each check/monitored component status per iteration with timestamps. It also displays information about the components in case of failure. Refer [report](docs/cerberus/example_report.md) for example.
+The report is generated in the run directory and it contains the information about each check/monitored component status per iteration with timestamps. It also displays information about the components in case of failure. Refer [report](/example_report.md) for example.
 
 You can use the "-o <file_path_name>" option to change the location of the created report
 
@@ -56,12 +56,12 @@ Cerberus exposes the metrics including the failures observed during the run thro
 
 
 ### Slack integration
-Cerberus supports reporting failures in slack. Refer [slack integration](docs/cerberus/slack.md) for information on how to set it up.
+Cerberus supports reporting failures in slack. Refer [slack integration](slack.md) for information on how to set it up.
 
 
 
 ### Node Problem Detector
-Cerberus also consumes [node-problem-detector](https://github.com/kubernetes/node-problem-detector) to detect various failures in Kubernetes/OpenShift nodes. More information on setting it up can be found at [node-problem-detector](docs/cerberus/node-problem-detector.md)
+Cerberus also consumes [node-problem-detector](https://github.com/kubernetes/node-problem-detector) to detect various failures in Kubernetes/OpenShift nodes. More information on setting it up can be found at [node-problem-detector](node-problem-detector.md)
 
 
 
@@ -71,7 +71,7 @@ Refer to [example_check](https://github.com/openshift-scale/cerberus/blob/master
 
 
 ### Alerts
-Monitoring metrics and alerting on abnormal behavior is critical as they are the indicators for clusters health. Information on supported alerts can be found at [alerts](docs/cerberus/alerts.md).
+Monitoring metrics and alerting on abnormal behavior is critical as they are the indicators for clusters health. Information on supported alerts can be found at [alerts](alerts.md).
 
 
 
@@ -99,7 +99,7 @@ There can be number of use cases, here are some of them:
 ### Contributions
 We are always looking for more enhancements, fixes to make it better, any contributions are most welcome. Feel free to report or work on the issues filed on github.
 
-[More information on how to Contribute](docs/cerberus/contribute.md)
+[More information on how to Contribute](contribute.md)
 
 ### Community
 Key Members(slack_usernames): paige, rook, mffiedler, mohit, dry923, rsevilla, ravi

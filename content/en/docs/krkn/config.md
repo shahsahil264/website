@@ -1,10 +1,10 @@
 ---
 title: Krkn Config Explanations
 description: Krkn config field explanations
-weight: 2
+weight: 1
 ---
 
-### Config
+# Config
 Set the scenarios to inject and the tunings like duration to wait between each scenario in the config file located at [config/config.yaml](https://github.com/redhat-chaos/krkn/blob/main/config/config.yaml).
 
 **NOTE**: [config](https://github.com/redhat-chaos/krkn/blob/main/config/config_performance.yaml) can be used if leveraging the [automated way](https://github.com/redhat-chaos/krkn#setting-up-infrastructure-dependencies) to install the infrastructure pieces.
@@ -65,7 +65,7 @@ Chaos scenario types:
 - syn_flood_scenarios
 
 
-# Cerberus 
+## Cerberus 
 Parameters to set for enabling of cerberus checks at the end of each executed scenario. The given url will pinged after the scenario and post action check have been completed for each scenario and iteration.
 
 **cerberus_enabled**: Enable it when cerberus is previously installed
@@ -75,7 +75,7 @@ Parameters to set for enabling of cerberus checks at the end of each executed sc
 **check_applicaton_routes**:  When enabled will look for application unavailability using the routes specified in the cerberus config and fails the run
 
 
-# Performance Monitoring 
+## Performance Monitoring 
 **deploy_dashboards**:  Install a mutable grafana and load the performance dashboards. Enable this only when running on OpenShift
 
 **repo**: Github repo of dashboards that you want to load. A great starter of some performance related dashbaords can be found [here](https://github.com/cloud-bulldozer/performance-dashboards.git)
@@ -97,7 +97,7 @@ Parameters to set for enabling of cerberus checks at the end of each executed sc
 **check_critical_alerts**: True or False; When enabled will check prometheus for critical alerts firing post chaos
 
 
-# Elastic
+## Elastic
 We have enabled the ability to store telemetry, metrics and alerts into ElasticSearch based on the below keys and values. 
 
 **enable_elastic**: True or False; If true, the telemetry data will be stored in the telemetry_index defined below. Based on if value of performance_monitoring.enable_alerts and performance_monitoring.enable_metrics are true or false, alerts and metrics will be saved in addition to each of the indexes
@@ -117,14 +117,16 @@ We have enabled the ability to store telemetry, metrics and alerts into ElasticS
 **telemetry_index**: ElasticSearch index where you want to store the telemetry details 
 
 
-# Tunings
+## Tunings
 **wait_duration**: Duration to wait between each chaos scenario
 
 **iterations**: Number of times to execute the scenarios
 
 **daemon_mode**: True or False; If true, iterations are set to infinity which means that the kraken will cause chaos forever and number of iterations is ignored
 
-# Telemetry
+## Telemetry
+More details on the data captured in the telmetry and how to set up your own telemetry data storage can be found [here](telemetry.md)
+
 **enabled**: True or False, enable/disables the telemetry collection feature
 
 **api_url**: https://ulnmf9xv7j.execute-api.us-west-2.amazonaws.com/production #telemetry service endpoint
@@ -167,7 +169,7 @@ We have enabled the ability to store telemetry, metrics and alerts into ElasticS
 
 **events_backup**: True or False, this will capture events that occured during the chaos run. Will be saved to {archive_path}/events.json
 
-# Health Checks                                              
+## Health Checks                                              
 Utilizing health check endpoints to observe application behavior during chaos injection, see more details about how this works and different ways to configure [here](health-checks.md)
 
 **interval**: Interval in seconds to perform health checks, default value is 2 seconds
@@ -181,3 +183,125 @@ Utilizing health check endpoints to observe application behavior during chaos in
    **auth**: Provide authentication credentials (username , password) in tuple format if any, ex:("admin","secretpassword")
    
    **exit_on_failure**: If value is True exits when health check failed for application, values can be True/False
+
+
+## Sample Config file
+
+```yaml 
+kraken:
+    kubeconfig_path: ~/.kube/config                     # Path to kubeconfig
+    exit_on_failure: False                                 # Exit when a post action scenario fails
+    publish_kraken_status: True                            # Can be accessed at http://0.0.0.0:8081
+    signal_state: RUN                                      # Will wait for the RUN signal when set to PAUSE before running the scenarios, refer docs/signal.md for more details
+    signal_address: 0.0.0.0                                # Signal listening address
+    port: 8081                                             # Signal port
+    chaos_scenarios:
+        # List of policies/chaos scenarios to load
+        - hog_scenarios:
+            - scenarios/kube/cpu-hog.yml
+            - scenarios/kube/memory-hog.yml
+            - scenarios/kube/io-hog.yml
+        - application_outages_scenarios:
+            - scenarios/openshift/app_outage.yaml
+        - container_scenarios:                             # List of chaos pod scenarios to load
+            - scenarios/openshift/container_etcd.yml
+        - pod_network_scenarios:
+              - scenarios/openshift/network_chaos_ingress.yml
+              - scenarios/openshift/pod_network_outage.yml
+        - pod_disruption_scenarios:
+            - scenarios/openshift/etcd.yml
+            - scenarios/openshift/regex_openshift_pod_kill.yml
+            - scenarios/openshift/prom_kill.yml
+            - scenarios/openshift/openshift-apiserver.yml
+            - scenarios/openshift/openshift-kube-apiserver.yml
+        - node_scenarios:                                  # List of chaos node scenarios to load
+            - scenarios/openshift/aws_node_scenarios.yml
+            - scenarios/openshift/vmware_node_scenarios.yml
+            - scenarios/openshift/ibmcloud_node_scenarios.yml
+        - time_scenarios:                                  # List of chaos time scenarios to load
+            - scenarios/openshift/time_scenarios_example.yml
+        - cluster_shut_down_scenarios:
+            - scenarios/openshift/cluster_shut_down_scenario.yml
+        - service_disruption_scenarios:
+             - scenarios/openshift/regex_namespace.yaml
+             - scenarios/openshift/ingress_namespace.yaml
+        - zone_outages_scenarios:
+            - scenarios/openshift/zone_outage.yaml
+        - pvc_scenarios:
+            - scenarios/openshift/pvc_scenario.yaml
+        - network_chaos_scenarios:
+            - scenarios/openshift/network_chaos.yaml
+        - service_hijacking_scenarios:
+              - scenarios/kube/service_hijacking.yaml
+        - syn_flood_scenarios:
+              - scenarios/kube/syn_flood.yaml
+
+cerberus:
+    cerberus_enabled: False                                # Enable it when cerberus is previously installed
+    cerberus_url:                                          # When cerberus_enabled is set to True, provide the url where cerberus publishes go/no-go signal
+    check_applicaton_routes: False                         # When enabled will look for application unavailability using the routes specified in the cerberus config and fails the run
+
+performance_monitoring:
+    deploy_dashboards: False                              # Install a mutable grafana and load the performance dashboards. Enable this only when running on OpenShift
+    repo: "https://github.com/cloud-bulldozer/performance-dashboards.git"
+    prometheus_url: ''                                      # The prometheus url/route is automatically obtained in case of OpenShift, please set it when the distribution is Kubernetes.
+    prometheus_bearer_token:                              # The bearer token is automatically obtained in case of OpenShift, please set it when the distribution is Kubernetes. This is needed to authenticate with prometheus.
+    uuid:                                                 # uuid for the run is generated by default if not set
+    enable_alerts: False                                  # Runs the queries specified in the alert profile and displays the info or exits 1 when severity=error
+    enable_metrics: False
+    alert_profile: config/alerts.yaml                          # Path or URL to alert profile with the prometheus queries
+    metrics_profile: config/metrics-report.yaml
+    check_critical_alerts: False                          # When enabled will check prometheus for critical alerts firing post chaos
+elastic:
+    enable_elastic: False
+    verify_certs: False
+    elastic_url: ""                                         # To track results in elasticsearch, give url to server here; will post telemetry details when url and index not blank
+    elastic_port: 32766
+    username: "elastic"
+    password: "test"
+    metrics_index: "krkn-metrics"
+    alerts_index: "krkn-alerts"
+    telemetry_index: "krkn-telemetry"
+
+tunings:
+    wait_duration: 60                                      # Duration to wait between each chaos scenario
+    iterations: 1                                          # Number of times to execute the scenarios
+    daemon_mode: False                                     # Iterations are set to infinity which means that the kraken will cause chaos forever
+telemetry:
+    enabled: False                                           # enable/disables the telemetry collection feature
+    api_url: https://ulnmf9xv7j.execute-api.us-west-2.amazonaws.com/production #telemetry service endpoint
+    username: username                                      # telemetry service username
+    password: password                                    # telemetry service password
+    prometheus_backup: True                                 # enables/disables prometheus data collection
+    prometheus_namespace: ""                                # namespace where prometheus is deployed (if distribution is kubernetes)
+    prometheus_container_name: ""                           # name of the prometheus container name (if distribution is kubernetes)
+    prometheus_pod_name: ""                                 # name of the prometheus pod (if distribution is kubernetes)
+    full_prometheus_backup: False                           # if is set to False only the /prometheus/wal folder will be downloaded.
+    backup_threads: 5                                       # number of telemetry download/upload threads
+    archive_path: /tmp                                      # local path where the archive files will be temporarly stored
+    max_retries: 0                                          # maximum number of upload retries (if 0 will retry forever)
+    run_tag: ''                                             # if set, this will be appended to the run folder in the bucket (useful to group the runs)
+    archive_size: 500000
+    telemetry_group: ''                                     # if set will archive the telemetry in the S3 bucket on a folder named after the value, otherwise will use "default"
+    # the size of the prometheus data archive size in KB. The lower the size of archive is
+                                                            # the higher the number of archive files will be produced and uploaded (and processed by backup_threads
+                                                            # simultaneously).
+                                                            # For unstable/slow connection is better to keep this value low
+                                                            # increasing the number of backup_threads, in this way, on upload failure, the retry will happen only on the
+                                                            # failed chunk without affecting the whole upload.
+    logs_backup: True
+    logs_filter_patterns:
+     - "(\\w{3}\\s\\d{1,2}\\s\\d{2}:\\d{2}:\\d{2}\\.\\d+).+"         # Sep 9 11:20:36.123425532
+     - "kinit (\\d+/\\d+/\\d+\\s\\d{2}:\\d{2}:\\d{2})\\s+"          # kinit 2023/09/15 11:20:36 log
+     - "(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d+Z).+"      # 2023-09-15T11:20:36.123425532Z log
+    oc_cli_path: /usr/bin/oc                                # optional, if not specified will be search in $PATH
+    events_backup: True                                     # enables/disables cluster events collection
+
+health_checks:                                              # Utilizing health check endpoints to observe application behavior during chaos injection.
+    interval:                                               # Interval in seconds to perform health checks, default value is 2 seconds
+    config:                                                 # Provide list of health check configurations for applications
+        - url:                                              # Provide application endpoint
+          bearer_token:                                     # Bearer token for authentication if any
+          auth:                                             # Provide authentication credentials (username , password) in tuple format if any, ex:("admin","secretpassword")
+          exit_on_failure:                                  # If value is True exits when health check failed for application, values can be True/False
+```

@@ -94,17 +94,17 @@ If the monitoring tool, cerberus is enabled it will consume the signal and conti
 
 Let us take a look at how to run the chaos scenarios on your Kubernetes clusters using Kraken-hub - a lightweight wrapper around Kraken to ease the runs by providing the ability to run them by just running container images using podman with parameters set as environment variables. This eliminates the need to carry around and edit configuration files and makes it easy for any CI framework integration. Here are the scenarios supported:
 
-- Pod Scenarios ([Documentation](/docs/scenarios/pod-scenario/))
+- Pod Scenarios ([Documentation](../scenarios/pod-scenario/))
   - Disrupts Kubernetes/Kubernetes and applications deployed as pods:
     - Helps understand the availability of the application, the initialization timing and recovery status.
   - [Demo](https://asciinema.org/a/452351?speed=3&theme=solarized-dark)
 
-- Container Scenarios ([Documentation](/docs/scenarios/container-scenario))
+- Container Scenarios ([Documentation](../scenarios/container-scenario))
   - Disrupts Kubernetes/Kubernetes and applications deployed as containers running as part of a pod(s) using a specified kill signal to mimic failures:
     - Helps understand the impact and recovery timing when the program/process running in the containers are disrupted - hangs, paused, killed etc., using various kill signals, i.e. SIGHUP, SIGTERM, SIGKILL etc.
   - [Demo](https://asciinema.org/a/BXqs9JSGDSEKcydTIJ5LpPZBM?speed=3&theme=solarized-dark)
 
-- Node Scenarios ([Documentation](/docs/scenarios/node-scenarios))
+- Node Scenarios ([Documentation](../scenarios/node-scenarios))
   - Disrupts nodes as part of the cluster infrastructure by talking to the cloud API. AWS, Azure, GCP, OpenStack and Baremetal are the supported platforms as of now. Possible disruptions include:
     - Terminate nodes
     - Fork bomb inside the node
@@ -113,30 +113,30 @@ Let us take a look at how to run the chaos scenarios on your Kubernetes clusters
     - etc.
   - [Demo](https://asciinema.org/a/ANZY7HhPdWTNaWt4xMFanF6Q5)
 
-- Zone Outages ([Documentation](/docs/scenarios/zone-outage-scenarios))
+- Zone Outages ([Documentation](../scenarios/zone-outage-scenarios))
   - Creates outage of availability zone(s) in a targeted region in the public cloud where the Kubernetes cluster is running by tweaking the network acl of the zone to simulate the failure, and that in turn will stop both ingress and egress traffic from all nodes in a particular zone for the specified duration and reverts it back to the previous state.
     - Helps understand the impact on both Kubernetes/Kubernetes control plane as well as applications and services running on the worker nodes in that zone.
     - Currently, only set up for AWS cloud platform: 1 VPC and multiples subnets within the VPC can be specified.
     - [Demo](https://asciinema.org/a/452672?speed=3&theme=solarized-dark)
 
-- Application Outages ([Documentation](/docs/scenarios/application-outage))
+- Application Outages ([Documentation](../scenarios/application-outage))
   - Scenario to block the traffic ( Ingress/Egress ) of an application matching the labels for the specified duration of time to understand the behavior of the service/other services which depend on it during the downtime.
     - Helps understand how the dependent services react to the unavailability.
     - [Demo](https://asciinema.org/a/452403?speed=3&theme=solarized-dark)
 
-- Power Outages ([Documentation](/docs/scenarios/power-outage-scenarios))
+- Power Outages ([Documentation](../scenarios/power-outage-scenarios))
   - This scenario imitates a power outage by shutting down of the entire cluster for a specified duration of time, then restarts all the nodes after the specified time and checks the health of the cluster.
     - There are various use cases in the customer environments. For example, when some of the clusters are shutdown in cases where the applications are not needed to run in a particular time/season in order to save costs.
     - The nodes are stopped in parallel to mimic a power outage i.e., pulling off the plug
   - [Demo](https://asciinema.org/a/r0zLbh70XK7gnc4s5v0ZzSXGo)
 
-- Resource Hog ([Documenattion](/docs/scenarios/arcaflow-scenarios))
+- Resource Hog ([Documenattion](../scenarios/arcaflow-scenarios))
   - Hogs CPU, Memory and IO on the targeted nodes
     - Helps understand if the application/system components have reserved resources to not get disrupted because of rogue applications, or get performance throttled.
-      - CPU Hog ([Documentation](/docs/scenarios/arcaflow-scenarios), [Demo](https://asciinema.org/a/452762))
-      - Memory Hog ([Documentation](/docs/scenarios/arcaflow-scenarios), [Demo](https://asciinema.org/a/452742?speed=3&theme=solarized-dark))
+      - CPU Hog ([Documentation](../scenarios/arcaflow-scenarios), [Demo](https://asciinema.org/a/452762))
+      - Memory Hog ([Documentation](../scenarios/arcaflow-scenarios), [Demo](https://asciinema.org/a/452742?speed=3&theme=solarized-dark))
 
-- Time Skewing ([Documentation](/docs/scenarios/time-scenarios))
+- Time Skewing ([Documentation](../scenarios/time-scenarios))
   - Manipulate the system time and/or date of specific pods/nodes.
     - Verify scheduling of objects so they continue to work.
     - Verify time gets reset properly.
@@ -145,11 +145,11 @@ Let us take a look at how to run the chaos scenarios on your Kubernetes clusters
   - Delete namespaces for the specified duration.
     - Helps understand the impact on other components and tests/improves recovery time of the components in the targeted namespace.
 
-- Persistent Volume Fill ([Documentation](/docs/scenarios/pvc-scenario))
+- Persistent Volume Fill ([Documentation](../scenarios/pvc-scenario))
   - Fills up the persistent volumes, up to a given percentage, used by the pod for the specified duration.
     - Helps understand how an application deals when it is no longer able to write data to the disk. For example, kafka’s behavior when it is not able to commit data to the disk.
 
-- Network Chaos ([Documentation](/docs/scenarios/network-chaos-scenario))
+- Network Chaos ([Documentation](../scenarios/network-chaos-scenario))
   - Scenarios supported includes:
     - Network latency
     - Packet loss
@@ -158,14 +158,14 @@ Let us take a look at how to run the chaos scenarios on your Kubernetes clusters
     - Packet corruption
     - Bandwidth limitation
 
-- Pod Network Scenario ([Documentation](/docs/scenarios/pod-network-scenario))
+- Pod Network Scenario ([Documentation](../scenarios/pod-network-scenario))
   - Scenario to block the traffic ( Ingress/Egress ) of a pod matching the labels for the specified duration of time to understand the behavior of the service/other services which depend on it during downtime. This helps with planning the requirements accordingly, be it improving the timeouts or tweaking the alerts etc.
   - With the current network policies, it is not possible to explicitly block ports which are enabled by allowed network policy rule. This chaos scenario addresses this issue by using OVS flow rules to block ports related to the pod. It supports OpenShiftSDN and OVNKubernetes based networks.
 
-- Service Disruption Scenarios ([Documentation](/docs/scenarios/service-disruption-scenarios))
+- Service Disruption Scenarios ([Documentation](../scenarios/service-disruption-scenarios))
   - Using this type of scenario configuration one is able to delete crucial objects in a specific namespace, or a namespace matching a certain regex string.
 
-- Service Hijacking Scenarios ([Documentation](/docs/scenarios/service-hijacking-scenario))
+- Service Hijacking Scenarios ([Documentation](../scenarios/service-hijacking-scenario))
   - Service Hijacking Scenarios aim to simulate fake HTTP responses from a workload targeted by a Service already deployed in the cluster. This scenario is executed by deploying a custom-made web service and modifying the target Service selector to direct traffic to this web service for a specified duration.
 
 
