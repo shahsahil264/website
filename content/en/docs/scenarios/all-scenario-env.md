@@ -30,6 +30,14 @@ DEPLOY_DASHBOARDS | Deploys mutable grafana loaded with dashboards visualizing p
 CAPTURE_METRICS   | Captures metrics as specified in the profile from in-cluster prometheus. Default metrics captures are listed [here](https://github.com/krkn-chaos/krkn/blob/master/config/metrics-aggregated.yaml) | False |
 ENABLE_ALERTS     | Evaluates expressions from in-cluster prometheus and exits 0 or 1 based on the severity set. [Default profile](https://github.com/krkn-chaos/krkn/blob/master/config/alerts.yaml). | False |
 ALERTS_PATH       | Path to the alerts file to use when ENABLE_ALERTS is set | config/alerts |
+ELASTIC_SERVER | Be able to track telemtry data in elasticsearch, this is the url of the elasticsearch data storage | _blank_ |
+ELASTIC_INDEX | Elastic search index pattern to post results to | _blank_ |
+HEALTH_CHECK_URL | URL to continually check and detect downtimes  | _blank_ | 
+HEALTH_CHECK_INTERVAL | Interval at which to get  | 2 | 
+HEALTH_CHECK_BEARER_TOKEN | Bearer token used for authenticating into health check URL | _blank_ | 
+HEALTH_CHECK_AUTH | Tuple of (username,password) used for authenticating into health check URL | _blank_ | 
+HEALTH_CHECK_EXIT_ON_FAILURE | If value is True exits when health check failed for application, values can be True/False |  _blank_ | 
+HEALTH_CHECK_VERIFY | Health check URL SSL validation; can be True/False | False | 
 CHECK_CRITICAL_ALERTS | When enabled will check prometheus for critical alerts firing post chaos | False |
 TELEMETRY_ENABLED | Enable/disables the telemetry collection feature | False |
 TELEMETRY_API_URL | telemetry service endpoint | https://ulnmf9xv7j.execute-api.us-west-2.amazonaws.com/production |
@@ -46,7 +54,5 @@ TELEMETRY_ARCHIVE_SIZE | the size of the prometheus data archive size in KB. The
 TELEMETRY_LOGS_BACKUP  | Logs backup to s3 | False |
 TELEMETRY_FILTER_PATTER | Filter logs based on certain time stamp patterns |["(\\w{3}\\s\\d{1,2}\\s\\d{2}:\\d{2}:\\d{2}\\.\\d+).+","kinit (\\d+/\\d+/\\d+\\s\\d{2}:\\d{2}:\\d{2})\\s+","(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d+Z).+"]  | 
 TELEMETRY_CLI_PATH | OC Cli path, if not specified will be search in $PATH | _blank_ |
-ELASTIC_SERVER | Be able to track telemtry data in elasticsearch, this is the url of the elasticsearch data storage | _blank_ |
-ELASTIC_INDEX | Elastic search index pattern to post results to | _blank_ |
 
 {{% alert title="Note" %}} For setting the TELEMETRY_ARCHIVE_SIZE,the higher the number of archive files will be produced and uploaded (and processed by backup_thread simultaneously).For unstable/slow connection is better to keep this value low increasing the number of backup_threads, in this way, on upload failure, the retry will happen only on the failed chunk without affecting the whole upload.{{% /alert %}}
