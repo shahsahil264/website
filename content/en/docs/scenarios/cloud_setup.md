@@ -14,7 +14,14 @@ weight: 1
 
 ## AWS
 
-**NOTE**: For clusters with AWS make sure [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) is installed and properly [configured](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html) using an AWS account
+**NOTE**: For clusters with AWS make sure [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) is installed and properly [configured](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html) using an AWS account. This should set a configuration file at `$HOME/.aws/config` for your the AWS account. If you have multiple profiles configured on AWS, you can change the profile by setting `export AWS_DEFAULT_PROFILE=<profile-name>`
+
+```bash
+export AWS_DEFAULT_REGION=<aws-region>
+```
+
+This configuration will work for self managed AWS, ROSA and Rosa-HCP
+
 
 ## GCP
 **NOTE**: For clusters with GCP make sure [GCP CLI](https://cloud.google.com/sdk/docs/install#linux) is installed.
@@ -23,7 +30,7 @@ A google service account is required to give proper authentication to GCP for no
 
 **NOTE**: A user with 'resourcemanager.projects.setIamPolicy' permission is required to grant project-level permissions to the service account.
 
-After creating the service account you will need to enable the account using the following: ```export GOOGLE_APPLICATION_CREDENTIALS="<serviceaccount.json>"```
+After creating the service account you will need to enable the account using the following: ```export GOOGLE_APPLICATION_CREDENTIALS="<serviceaccount.json>"``` or use `gcloud init`
 
 In krkn-hub, you'll need to both set the environemnt variable and also copy the file to the local container
 
@@ -37,7 +44,6 @@ Example:
 ```bash
 podman run -e GOOGLE_APPLICATION_CREDENTIALS=/home/krkn/GCP_app.json -e DURATION=10 --net=host  -v <kubeconfig>:/home/krkn/.kube/config:Z -v <local_gcp_creds_file>:/home/krkn/GCP_app.json:Z -d quay.io/krkn-chaos/krkn-hub:...
 ```
-
 
 
 ## Openstack
@@ -58,6 +64,12 @@ Before running you will need to set the following:
 3. ```export AZURE_CLIENT_SECRET=<client secret>```
 
 4. ```export AZURE_CLIENT_ID=<client id>```
+
+{{% alert title="Note" %}} 
+This configuration will only work for self managed Azure, not ARO. ARO service puts a deny assignment in place over cluster managed resources, that only allows the ARO service itself to modify the VM resources. This is a capability unique to Azure and the structure of the service to prevent customers from hurting themselves. Refer to the links below for more documentation around this.
+- https://learn.microsoft.com/en-us/azure/openshift/openshift-service-definitions#azure-resource-architecture
+- https://learn.microsoft.com/en-us/azure/openshift/support-policies-v4#cluster-management
+{{% /alert %}}
 
 ## Alibaba
 
@@ -88,8 +100,8 @@ These are the credentials that you would normally use to access the vSphere clie
 
 ## IBMCloud
 If no api key is set up with proper VPC resource permissions, use the following to create: 
-* Access group
-* Service id with the following access
+* [Access group](https://cloud.ibm.com/docs/account?topic=account-groups&interface=ui#create_ag)
+* [Service ID with the following access:](https://cloud.ibm.com/docs/account?topic=account-serviceids&interface=ui#create_serviceid)
   * With policy **VPC Infrastructure Services**
   * Resources = All
   * Roles: 
@@ -97,7 +109,7 @@ If no api key is set up with proper VPC resource permissions, use the following 
     * Administrator 
     * Operator  
     * Viewer
-* API Key
+* [API Key](https://cloud.ibm.com/docs/account?topic=account-manapikey&interface=ui)
 
 Set the following environment variables
 
