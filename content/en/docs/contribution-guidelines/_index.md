@@ -39,6 +39,9 @@ If you are currently using a scenario but want more configuration options, pleas
 ## Work in Progress PR's 
 If you are working on a contribution in any capacity and would like to get a new set of eyes on your work, go ahead and open a PR with '[WIP]' at the start of the tite in your PR and tag the [maintainers](https://github.com/krkn-chaos/krkn/blob/main/MAINTAINERS.md) for review. We will review your changes and give you sugguestions to keep you moving! 
 
+## Office Hours
+If you have any questions that you think could be better discussed on a meeting we have monthly office hours [zoom link](https://zoom-lfx.platform.linuxfoundation.org/meetings/krkn?view=month). Please add items to agenda before so we can best prepare to help you.
+
 ## Good PR Checklist 
 Here's a quick checklist for a good PR, more details below:
 - One feature/change per PR
