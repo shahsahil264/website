@@ -6,11 +6,11 @@ weight: 2
 
 # RBAC rules
 
-Following is the compilation of all the rbac config required to run [run_kraken](https://github.com/redhat-chaos/krkn/blob/main/run_kraken.py) and each of the krkn test scenarios.
+Following is the compilation of all the rbac config required to run [run_kraken](https://github.com/krkn-chaos/krkn/blob/main/run_kraken.py) and each of the krkn test scenarios.
 
 > **_NOTE:_** Below configuration assumes the user executing the krkrkn as `user1` and the user would be using the namespace `testnamespace` to test his application and run krn tests.
 
-## [run_kraken](https://github.com/redhat-chaos/krkn/blob/main/run_kraken.py)
+## [run_kraken](https://github.com/krkn-chaos/krkn/blob/main/run_kraken.py)
 
 Allow the user to query prometheus metrics and get infrastructure,network level details.
 
@@ -24,57 +24,57 @@ Allow the use user1 to view resources in test1 namespace
 kubectl create rolebinding view-role-binding --clusterrole=view --user=user1 --namespace=testnamespace
 ```
 
-## [Pod Scenarios](https://github.com/krkn-chaos/krkn/blob/main/docs/pod_scenarios.md)
+## [Pod Scenarios](../scenarios/pod-scenario/_index.md)
 
-namespace/clusterRole  | apigroups  | resources | verb    
----------------------- | ---------- | --------- | ----
-testnamespace    | ""               | "pods"    | "delete"
+| namespace/clusterRole  | apigroups  | resources | verb    | 
+| ---------------------- | ---------- | --------- | ---- | 
+| testnamespace    | ""               | "pods"    | "delete" | 
 
 
-## [Container Scenarios](https://github.com/krkn-chaos/krkn/blob/main/docs/container_scenarios.md) 
+## [Container Scenarios](../scenarios/container-scenario/_index.md) 
 
 namespace/clusterRole  | apigroups  | resources | verb    
 ---------------------- | ---------- | --------- | ----
 testnamespace    | ""               | "pods","pods/exec" | "get","create","delete"
 
-## [Service Disruption Scenarios](https://github.com/krkn-chaos/krkn/blob/main/docs/service_disruption_scenarios.md) 
+## [Service Disruption Scenarios](../scenarios/service-disruption-scenarios/_index.md) 
 
 namespace/clusterRole  | apigroups  | resources | verb    
 ---------------------- | ---------- | --------- | ----
 testnamespace    | ""               | "pods","pods/exec","services" | "get","create","delete"
 testnamespace    | "apps"           | "daemonsets","statefulsets","replicasets","deployments" | "get","delete"
 
-## [Application_outages](https://github.com/krkn-chaos/krkn/blob/main/docs/application_outages.md)
+## [Application_outages](../scenarios/application-outage/_index.md)
 
 namespace/clusterRole  | apigroups  | resources | verb    
 ---------------------- | ---------- | --------- | ----
 testnamespace    | "networking.k8s.io"         | "networkpolicies" | "get","create","delete"
 
-## [PVC scenario](https://github.com/krkn-chaos/krkn/blob/main/docs/pvc_scenario.md)
+## [PVC scenario](../scenarios/pvc-scenario/_index.md)
 
 namespace/clusterRole  | apigroups  | resources | verb    
 ---------------------- | ---------- | --------- | ----
 testnamespace    | ""               | "pods","pods/exec" | "get","create","delete"
 
-## [Time Scenarios](https://github.com/krkn-chaos/krkn/blob/main/docs/time_scenarios.md)
+## [Time Scenarios](../scenarios/time-scenarios/_index.md)
 
 namespace/clusterRole  | apigroups  | resources | verb    
 ---------------------- | ---------- | --------- | ----
 testnamespace    | ""               | "pods","pods/exec" | "get","create","delete"
 
-> ## **_NOTE:_** Grant the privileged SCC to the user running the pod, to execute all the below krkn testscenarios
+**_NOTE:_** Grant the privileged SCC to the user running the pod, to execute all the below krkn testscenarios
 ```
 oc adm policy add-scc-to-user privileged user1
 ```
 
-## [Hog Scenarios: CPU, Memory](https://github.com/krkn-chaos/krkn/blob/main/docs/hog_scenarios.md)
+## [Hog Scenarios: CPU, Memory](../scenarios/hog-scenarios/_index.md)
 
 namespace/clusterRole  | apigroups  | resources | verb    
 ---------------------- | ---------- | --------- | ----
 testnamespace    | ""               | "pods","pods/exec" | "get","create","delete"
 clusterRole    | ""               | "nodes","nodes/proxy" | "list","get"
 
-## [Network_Chaos](https://github.com/krkn-chaos/krkn/blob/main/docs/network_chaos.md)
+## [Network_Chaos](../scenarios/network-chaos-scenario/_index.md)
 
 namespace/clusterRole  | apigroups  | resources | verb    
 ---------------------- | ---------- | --------- | ----
@@ -82,7 +82,7 @@ testnamespace    | ""               | "pods","pods/exec" | "get","create","delet
 testnamespace    | "batch"              | "jobs" | "get","delete","list","create"
 clusterRole    | ""               | "nodes","nodes/proxy" | "list","get"
 
-## [Pod Network Scenarios](https://github.com/krkn-chaos/krkn/blob/main/docs/pod_network_scenarios.md)
+## [Pod Network Scenarios](../scenarios/pod-network-scenario/_index.md)
 
 namespace/clusterRole  | apigroups  | resources | verb    
 ---------------------- | ---------- | --------- | ----
