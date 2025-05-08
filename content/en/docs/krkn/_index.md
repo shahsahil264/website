@@ -7,7 +7,7 @@ weight: 1
 **krkn** is a chaos and resiliency testing tool for Kubernetes. Kraken injects deliberate failures into Kubernetes clusters to check if it is resilient to turbulent conditions.
 
 
-## Use Case and Target Personas
+### Use Case and Target Personas
 Krkn is designed for the following user roles:
 - Site Reliability Engineers aiming to enhance the resilience and reliability of the Kubernetes platform and the applications it hosts. They also seek to establish a testing pipeline that ensures managed services adhere to best practices, minimizing the risk of prolonged outages.
 - Developers and Engineers focused on improving the performance and robustness of their application stack when operating under failure scenarios.
