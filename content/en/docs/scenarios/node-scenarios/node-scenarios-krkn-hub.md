@@ -47,7 +47,7 @@ See list of variables that apply to all scenarios [here](all_scenarios_env.md) t
 
 Parameter               | Description                                                           | Default
 ----------------------- | -----------------------------------------------------------------     | ------------------------------------ |
-ACTION                  | Action can be one of the [following](https://github.com/krkn-chaos/krkn/blob/master/docs/node_scenarios.md) | node_stop_start_scenario for aws and vmware-node-reboot for vmware, ibmcloud-node-reboot for ibmcloud |
+ACTION                  | Action can be one of the [following](https://github.com/krkn-chaos/krkn/blob/master/docs/node_scenarios.md) | node_stop_start_scenario |
 LABEL_SELECTOR          | Node label to target                                                  | node-role.kubernetes.io/worker       |
 NODE_NAME               | Node name to inject faults in case of targeting a specific node; Can set multiple node names separated by a comma      | ""                                   |
 INSTANCE_COUNT          | Targeted instance count matching the label selector                   | 1                                    |
