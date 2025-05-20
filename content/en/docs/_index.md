@@ -39,7 +39,7 @@ Krkn is here to solve these problems.
 
  Below is a flow chart of all the krkn related repositories in the github organization. They all build on eachother with krkn-lib being the lowest level of kubernetes based functions to full running scenarios and demos and documentations
 
-<img src="/images/krkn-repo-flowchart.png" width="900px" class="krkn-chaos-flowchart img-fluid mb-3">
+<img src="https://raw.githubusercontent.com/krkn-chaos/website/refs/heads/main/assets/images/krkn-repo-flowchart.png"  style="max-width:900px; max-height:400px; width:100%; aspect-ratio:20/9; " class="contain" >
 
 * First off, [**krkn-lib**](https://github.com/krkn-chaos/krkn-lib). Our lowest level repository containing all of the basic kubernetes python functions that make Krkn run. This also includes models of our telemetry data we output at the end of our runs and lots of functional tests.
 
