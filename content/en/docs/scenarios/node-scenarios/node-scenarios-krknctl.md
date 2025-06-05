@@ -21,6 +21,7 @@ Scenario specific parameters:  (be sure to scroll to right)
 ~-~-instance-count | Targeted instance count matching the label selector | number | 1 | 
 ~-~-runs | Iterations to perform action on a single node | number | 1 | 
 ~-~-cloud-type | Cloud platform on top of which cluster is running, supported platforms - aws, azure, gcp, vmware, ibmcloud, bm | enum | aws | 
+~-~-kube-check | Connecting to the kubernetes api to check the node status, set to False for SNO | enum | false | 
 ~-~-timeout | Duration to wait for completion of node scenario injection | number | 180| 
 ~-~-duration | Duration to wait for completion of node scenario injection | number | 120 | 
 ~-~-vsphere-ip | VSpere IP Address | string | 

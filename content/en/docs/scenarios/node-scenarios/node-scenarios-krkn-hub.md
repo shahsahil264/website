@@ -55,8 +55,7 @@ RUNS                    | Iterations to perform action on a single node         
 CLOUD_TYPE              | Cloud platform on top of which cluster is running, supported platforms - aws, vmware, ibmcloud, bm           | aws |
 TIMEOUT                 | Duration to wait for completion of node scenario injection             | 180                                |
 DURATION                | Duration to stop the node before running the start action - not supported for vmware and ibm cloud type             | 120                                |
-VERIFY_SESSION          | Only needed for vmware - Set to True if you want to verify the vSphere client session using certificates    | False                               |
-SKIP_OPENSHIFT_CHECKS   | Only needed for vmware - Set to True if you don't want to wait for the status of the nodes to change on OpenShift before passing the scenario  | False |
+KUBE_CHECK       | Connect to the kubernetes api to see if the node gets to a certain state during the node scenario   | False                               |
 BMC_USER                 | Only needed for Baremetal ( bm ) - IPMI/bmc username | "" | 
 BMC_PASSWORD             | Only needed for Baremetal ( bm ) - IPMI/bmc password | "" |
 BMC_ADDR                 | Only needed for Baremetal ( bm ) - IPMI/bmc username | "" |
