@@ -20,6 +20,7 @@ Scenario specific parameters:
 ~-~-vpc-id | cluster virtual private network to target |string | 
 ~-~-subnet-id | subnet-id to deny both ingress and egress traffic ( REQUIRED ). Format: [subnet1, subnet2]  | string | 
 ~-~-zone | cluster zone to target (only for gcp cloud type )| string | 
+~-~-kube-check | Connecting to the kubernetes api to check the node status, set to False for SNO | enum |
 ~-~-aws-access-key-id | AWS Access Key Id | string (secret)| 
 ~-~-aws-secret-access-key | AWS Secret Access Key | string (secret)| 
 ~-~-aws-default-region | AWS default region | string | 
