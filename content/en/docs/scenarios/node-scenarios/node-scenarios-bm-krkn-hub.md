@@ -49,7 +49,8 @@ ex.)
 See list of variables that apply to all scenarios [here](all_scenarios_env.md) that can be used/set in addition to these scenario specific variables
 
 #### Demo
-You can find a link to a demo of the scenario [here](https://asciinema.org/a/ANZY7HhPdWTNaWt4xMFanF6Q5)
+See a demo of this scenario:
+<script src="https://asciinema.org/a/ANZY7HhPdWTNaWt4xMFanF6Q5.js" id="asciicast-ANZY7HhPdWTNaWt4xMFanF6Q5" async="true" style="max-width:900px; max-height:400px; width:100%; aspect-ratio:20/9;"></script>
 
 **NOTE** In case of using custom metrics profile or alerts profile when `CAPTURE_METRICS` or `ENABLE_ALERTS` is enabled, mount the metrics profile from the host on which the container is run using podman/docker under `/home/krkn/kraken/config/metrics-aggregated.yaml` and `/home/krkn/kraken/config/alerts`. For example:
 ```
