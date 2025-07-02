@@ -41,8 +41,7 @@ Krkn is here to solve these problems.
 
 <img src="https://raw.githubusercontent.com/krkn-chaos/website/refs/heads/main/assets/images/krkn-repo-flowchart.png"  style="max-width:900px; max-height:400px; width:100%; aspect-ratio:20/9; " class="contain" >
 
-* First off, [**krkn-lib**](https://github.com/krkn-chaos/krkn-lib). Our lowest level repository containing all of the basic kubernetes python functions that make Krkn run. This also includes models of our telemetry data we output at the end of our runs and lots of functional tests.
-
+* First off, [**krkn-lib**](https://github.com/krkn-chaos/krkn-lib). Our lowest level repository containing all of the basic kubernetes python functions that make Krkn run. This also includes models of our telemetry data we output at the end of our runs and lots of functional tests. Unless you are contributing to Krkn, you won't need to explicitly clone this repository. 
 
 * Krkn: Our brain repository that takes in a yaml file of configuration and scenario files and causes chaos on a cluster.
   We sugguest using this way of running to try out new scenarios or if you want to run a combination of scenarios in one run. **A CNCF sandbox project.** [Github](https://github.com/krkn-chaos/) 
