@@ -76,3 +76,14 @@ and the custom web service and its resources will be undeployed.
 __NOTE__: Some clients (e.g., cURL, jQuery) may optimize queries using lightweight methods (like HEAD or OPTIONS) 
 to probe API behavior. If these methods are not defined in the test plan, the web service may respond with 
 a `405` or `404` status code. If you encounter unexpected behavior, consider this use case.
+
+### How to Use Plugin Name
+Add the plugin name to the list of chaos_scenarios section in the config/config.yaml file
+```yaml
+kraken:
+    kubeconfig_path: ~/.kube/config                     # Path to kubeconfig
+    .. 
+    chaos_scenarios:
+        - service_hijacking_scenarios:
+            - scenarios/<scenario_name>.yaml
+```

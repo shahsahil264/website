@@ -21,22 +21,14 @@ scenarios:
   expected_recovery_time: <number of seconds to wait for container to be running again> (defaults to 120seconds)
 ```
 
-#### Post Action
-In all scenarios we do a post chaos check to wait and verify the specific component.
 
-Here there are two options:
-1. Pass a custom script in the main config scenario list that will run before the chaos and verify the output matches post chaos scenario.
-
-See [scenarios/post_action_etcd_container.py](https://github.com/krkn-chaos/krkn/blob/main/scenarios/post_action_etcd_container.py) for an example.
+## How to Use Plugin Name
+Add the plugin name to the list of chaos_scenarios section in the config/config.yaml file
 ```yaml
--   container_scenarios:                                 # List of chaos pod scenarios to load.
-            - -    scenarios/container_etcd.yml
-              -    scenarios/post_action_etcd_container.py
-```
-
-2. Allow kraken to wait and check the killed containers until they become ready again. Kraken keeps a list of the specific
-containers that were killed as well as the namespaces and pods to verify all containers that were affected recover properly.
-
-```yaml
-expected_recovery_time: <seconds to wait for container to recover>
-```
+kraken:
+    kubeconfig_path: ~/.kube/config                     # Path to kubeconfig
+    .. 
+    chaos_scenarios:
+        - container_scenarios:
+            - scenarios/<scenario_name>.yaml
+  ```

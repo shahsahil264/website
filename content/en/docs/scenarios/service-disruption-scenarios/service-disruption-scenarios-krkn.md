@@ -40,26 +40,13 @@ This scenario will select a namespace (or multiple) dependent on the configurati
 5. Deployments 
 
 
-#### Post Action
-
-We do a post chaos check to wait and verify the specific objects in each namespace are Ready
-
-Here there are two options:
-
-1. Pass a custom script in the main config scenario list that will run before the chaos and verify the output matches post chaos scenario.
-
-See [scenarios/post_action_namespace.py](https://github.com/cloud-bulldozer/kraken/tree/master/scenarios/post_action_namespace.py) for an example
-
+### How to Use Plugin Name
+Add the plugin name to the list of chaos_scenarios section in the config/config.yaml file
 ```yaml
--   namespace_scenarios:
-     - -    scenarios/regex_namespace.yaml
-       -    scenarios/post_action_namespace.py
-```
-
-
-1. Allow kraken to wait and check all killed objects in the namespaces become 'Running' again. Kraken keeps a list of the specific
-objects in namespaces that were killed to verify all that were affected recover properly.
-
-```yaml
-wait_time: <seconds to wait for namespace to recover>
+kraken:
+    kubeconfig_path: ~/.kube/config                     # Path to kubeconfig
+    .. 
+    chaos_scenarios:
+        - service_disruption_scenarios:
+            - scenarios/<scenario_name>.yaml
 ```

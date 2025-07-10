@@ -20,3 +20,15 @@ cluster_shut_down_scenario:                          # Scenario to stop all the 
   runs: 1                                            # Number of times to execute the cluster_shut_down scenario.
   shut_down_duration: 120                            # Duration in seconds to shut down the cluster.
   cloud_type: aws                                    # Cloud type on which Kubernetes/OpenShift runs.
+```
+
+### How to Use Plugin Name
+Add the plugin name to the list of chaos_scenarios section in the config/config.yaml file
+```yaml
+kraken:
+    kubeconfig_path: ~/.kube/config                     # Path to kubeconfig
+    .. 
+    chaos_scenarios:
+        - cluster_shut_down_scenarios:
+            - scenarios/<scenario_name>.yaml
+```

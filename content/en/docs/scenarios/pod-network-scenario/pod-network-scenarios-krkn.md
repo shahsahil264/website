@@ -47,3 +47,14 @@ Scenario to introduce network latency, packet loss, and bandwidth restriction in
  - Wait for the duration time.
  - Remove traffic shaping config on pod's interface.
  - Remove the job that spawned the pod.
+
+ ### How to Use Plugin Name
+Add the plugin name to the list of chaos_scenarios section in the config/config.yaml file
+```yaml
+kraken:
+    kubeconfig_path: ~/.kube/config                     # Path to kubeconfig
+    .. 
+    chaos_scenarios:
+        - pod_network_scenarios:
+            - scenarios/<scenario_name>.yaml
+  ```

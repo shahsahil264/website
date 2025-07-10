@@ -18,3 +18,14 @@ Kraken creates a network policy blocking the ingress/egress traffic to create an
 ```bash
 $ oc delete networkpolicy/kraken-deny -n <targeted-namespace>
 ```
+
+## How to Use Plugin Name
+Add the plugin name to the list of chaos_scenarios section in the config/config.yaml file
+```yaml
+kraken:
+    kubeconfig_path: ~/.kube/config                     # Path to kubeconfig
+    .. 
+    chaos_scenarios:
+        - application_outages_scenarios:
+            - scenarios/<scenario_name>.yaml
+  ```

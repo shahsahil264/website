@@ -27,3 +27,14 @@ attacker-nodes: # this will set the node affinity to schedule the attacker node.
     - linux
 
  ```
+
+### How to Use Plugin Name
+Add the plugin name to the list of chaos_scenarios section in the config/config.yaml file
+```yaml
+kraken:
+    kubeconfig_path: ~/.kube/config                     # Path to kubeconfig
+    .. 
+    chaos_scenarios:
+        - syn_flood_scenarios:
+            - scenarios/<scenario_name>.yaml
+```

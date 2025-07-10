@@ -27,3 +27,14 @@ pvc_scenario:
  - Wait for the duration time.
  - Remove the temp file created:
     - `rm kraken.tmp`
+
+### How to Use Plugin Name
+Add the plugin name to the list of chaos_scenarios section in the config/config.yaml file
+```yaml
+kraken:
+    kubeconfig_path: ~/.kube/config                     # Path to kubeconfig
+    .. 
+    chaos_scenarios:
+        - pvc_scenarios:
+            - scenarios/<scenario_name>.yaml
+```

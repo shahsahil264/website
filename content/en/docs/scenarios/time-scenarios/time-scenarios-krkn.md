@@ -33,3 +33,14 @@ time_scenarios:
     object_type: node
     label_selector: node-role.kubernetes.io/worker
 ```
+
+### How to Use Plugin Name
+Add the plugin name to the list of chaos_scenarios section in the config/config.yaml file
+```yaml
+kraken:
+    kubeconfig_path: ~/.kube/config                     # Path to kubeconfig
+    .. 
+    chaos_scenarios:
+        - time_scenarios:
+            - scenarios/<scenario_name>.yaml
+```

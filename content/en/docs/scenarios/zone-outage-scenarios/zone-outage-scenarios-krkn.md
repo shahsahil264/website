@@ -44,3 +44,14 @@ In case of failures during the steps which revert back the network acl to allow 
 In case of failures during the steps which bring back the cluster nodes in the zone, the nodes in the particular zone will be in `NotReady` condition. Here is how to fix it:
 - From the gcp web console, select one of the instances in the zone which is down
 - Kraken just stops the node, so you'll just have to select the stopped nodes and START them. This will get back the nodes in the targeted zone into Ready state
+
+### How to Use Plugin Name
+Add the plugin name to the list of chaos_scenarios section in the config/config.yaml file
+```yaml
+kraken:
+    kubeconfig_path: ~/.kube/config                     # Path to kubeconfig
+    .. 
+    chaos_scenarios:
+        - zone_outages_scenarios:
+            - scenarios/<scenario_name>.yaml
+```
