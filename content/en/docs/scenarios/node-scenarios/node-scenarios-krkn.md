@@ -29,6 +29,7 @@ node_scenarios:
     cloud_type: <cloud>        # cloud type on which Kubernetes/OpenShift runs  
     parallel: <true_or_false>  # Run action on label or node name in parallel or sequential, defaults to sequential
     kube_check: <true_or_false> # Run the kubernetes api calls to see if the node gets to a certain state during the node scenario
+    disable_ssl_verification: <true_or_false> # Disable SSL verification, to avoid certificate errors
 ```
 
 
@@ -117,6 +118,8 @@ How to set up IBMCloud to run node scenarios is defined [here](../cloud_setup.md
 See a sample of ibm cloud node scenarios [example config file](https://github.com/krkn-chaos/krkn/blob/main/scenarios/openshift/ibmcloud_node_scenarios.yml)
 
 The cloud type in the scenario yaml file needs to be `ibm`
+{{% alert title="Note" %}} To avoid ssl certificate errors, set `disable_ssl_verification` to `true` in the scenario yaml file.
+{{% /alert %}}
 
 
 ## General
