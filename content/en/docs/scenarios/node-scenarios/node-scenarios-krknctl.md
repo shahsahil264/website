@@ -35,6 +35,7 @@ Scenario specific parameters:  (be sure to scroll to right)
 ~-~-bmc-address | Only needed for Baremetal ( bm ) - IPMI/bmc address | string | 
 ~-~-ibmc-address | IBM Cloud URL | string | 
 ~-~-ibmc-api-key | IBM Cloud API Key | string (secret)| 
+~-~-disable-ssl-verification | Disable SSL verification, to avoid certificate errors | enum | false |
 ~-~-azure-tenant | Azure Tenant | string  | 
 ~-~-azure-client-secret | Azure Client Secret | string(secret) | 
 ~-~-azure-client-id | Azure Client ID | string(secret) | 
