@@ -1,0 +1,10 @@
+{{ $file := .Get 0 }}
+{{ $data := resources.GetRemote $file }}
+{{ if $data }}
+{{ $content := $data.Content }}
+{{ $content | markdownify }}
+{{ else }}
+<div class="alert alert-warning">
+    <strong>Warning:</strong> Could not load content from {{ $file }}
+</div>
+{{ end }}
