@@ -2,7 +2,7 @@
 title: Node Scenarios using Krkn
 description: 
 date: 2017-01-04
-weight: 2
+weight: 1
 ---
 
 For any of the node scenarios, you'll specify `node_scenarios` as the scenario type. 

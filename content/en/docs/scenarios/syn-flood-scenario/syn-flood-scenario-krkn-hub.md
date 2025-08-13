@@ -2,7 +2,7 @@
 title: Syn Flood Scenario using Krkn-Hub
 description: >
 date: 2017-01-05
-weight: 4
+weight: 2
 ---
 ### Syn Flood scenario
 This scenario simulates a user-defined surge of TCP SYN requests directed at one or more services deployed within the cluster or an external target reachable by the cluster.

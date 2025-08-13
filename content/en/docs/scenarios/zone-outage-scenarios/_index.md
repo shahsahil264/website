@@ -2,6 +2,7 @@
 title: Zone Outage Scenarios
 description: 
 date: 2017-01-04
+weight: 3
 ---
 
 Scenario to create outage in a targeted zone in the public cloud to understand the impact on both Kubernetes/OpenShift control plane as well as applications running on the worker nodes in that zone. 

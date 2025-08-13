@@ -1,7 +1,8 @@
 ---
 title: KubeVirt VM Outage Scenario
 description: Simulating VM-level disruptions in KubeVirt/OpenShift CNV environments
-date: 2025-05-17
+date: 2017-01-04
+weight: 3
 ---
 
 This scenario enables the simulation of VM-level disruptions in clusters where KubeVirt or OpenShift Containerized Network Virtualization (CNV) is installed. It allows users to delete a Virtual Machine Instance (VMI) to simulate a VM crash and test recovery capabilities.

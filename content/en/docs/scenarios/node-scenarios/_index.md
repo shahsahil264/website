@@ -2,6 +2,7 @@
 title: Node Scenarios
 description: 
 date: 2017-01-04
+weight: 3
 ---
 This scenario disrupts the node(s) matching the label or node name(s) on a Kubernetes/OpenShift cluster. These scenarios are performed in two different ways, either by the clusters cloud cli or by common/generic commands that can be performed on any cluster. 
 

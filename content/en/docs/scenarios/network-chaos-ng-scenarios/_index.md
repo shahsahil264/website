@@ -3,6 +3,7 @@ type: "docs/scenarios"
 title: Network Chaos NG Scenarios
 description: 
 date: 2017-01-04
+weight: 3
 ---
 
 This scenario introduce a new infrastructure to refactor and port the current implementation of the network chaos plugins

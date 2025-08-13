@@ -2,7 +2,7 @@
 title: Network Chaos Scenario using Krkn-Hub
 description: >
 date: 2017-01-05
-weight: 4
+weight: 2
 ---
 This scenario introduces network latency, packet loss, bandwidth restriction in the egress traffic of a Node's interface using the tc and Netem. For more information refer the following [documentation](/docs/scenarios/network-chaos-scenario/_index.md).
 

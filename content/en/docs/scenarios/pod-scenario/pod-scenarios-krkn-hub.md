@@ -2,7 +2,7 @@
 title: Pod Scenarios using Krkn-hub
 description: >
 date: 2017-01-05
-weight: 3
+weight: 2
 ---
 This scenario disrupts the pods matching the label in the specified namespace on a Kubernetes/OpenShift cluster.
 

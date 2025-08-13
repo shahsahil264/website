@@ -2,7 +2,7 @@
 title: Syn Flood Scenario using Krkn
 description: 
 date: 2017-01-04
-weight: 2
+weight: 1
 ---
 ##### Sample scenario config
 

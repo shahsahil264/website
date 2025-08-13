@@ -2,7 +2,7 @@
 title: Service Disruption Scenario using Krkn-Hub
 description: >
 date: 2017-01-05
-weight: 4
+weight: 2
 ---
 This scenario deletes main objects within a namespace in your Kubernetes/OpenShift cluster. More information can be found [here](/docs/scenarios/service-disruption-scenarios/_index.md).
 

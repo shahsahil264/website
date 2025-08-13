@@ -2,7 +2,7 @@
 title: IO Hog Scenario using Krkn-Hub
 description: >
 date: 2017-01-05
-weight: 4
+weight: 2
 ---
 This scenario hogs the IO on the specified node on a Kubernetes/OpenShift cluster for a specified duration. For more information refer the following [documentation](/docs/scenarios/io-hog-scenario/_index.md).
 

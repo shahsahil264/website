@@ -2,7 +2,7 @@
 title: Node Scenarios using Krkn-Hub
 description: >
 date: 2017-01-05
-weight: 4
+weight: 2
 ---
 This scenario disrupts the node(s) matching the label on a Kubernetes/OpenShift cluster. Actions/disruptions supported are listed [here](/docs/scenarios/node-scenarios/_index.md)
 

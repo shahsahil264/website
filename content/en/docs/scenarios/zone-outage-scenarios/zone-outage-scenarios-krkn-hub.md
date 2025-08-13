@@ -2,7 +2,7 @@
 title: Zone Outage Scenarios using Krkn-Hub
 description: >
 date: 2017-01-05
-weight: 4
+weight: 2
 ---
 This scenario disrupts a targeted zone in the public cloud by blocking egress and ingress traffic to understand the impact on both Kubernetes/OpenShift platforms control plane as well as applications running on the worker nodes in that zone. More information is documented [here](/docs/scenarios/zone-outage-scenarios/_index.md)
 

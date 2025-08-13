@@ -2,6 +2,7 @@
 title: Application Outage Scenarios
 description: 
 date: 2017-01-04
+weight: 3
 ---
 
 ### Application outages

@@ -2,7 +2,7 @@
 title: Node Scenarios on Bare Metal using Krkn-Hub
 description: >
 date: 2017-01-05
-weight: 5
+weight: 2
 ---
 
 ### Node Scenarios Bare Metal

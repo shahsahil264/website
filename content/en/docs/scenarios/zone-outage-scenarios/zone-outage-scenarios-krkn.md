@@ -2,7 +2,7 @@
 title: Zone Outage Scenarios using Krkn
 description: 
 date: 2017-01-04
-weight: 2
+weight: 1
 ---
 Zone outage can be injected by placing the zone_outage config file under zone_outages option in the [kraken config](https://github.com/redhat-chaos/krkn/blob/main/config/config.yaml). Refer to [zone_outage_scenario](https://github.com/redhat-chaos/krkn/blob/main/scenarios/zone_outage.yaml) config file for the parameters that need to be defined.
 

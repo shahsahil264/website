@@ -2,7 +2,7 @@
 title: Service Hijacking Scenarios using Krkn
 description: 
 date: 2017-01-04
-weight: 2
+weight: 1
 ---
 The web service's source code is available [here](https://github.com/krkn-chaos/krkn-service-hijacking). 
 It employs a time-based test plan from the scenario configuration file, which specifies the behavior of resources during the chaos scenario as follows:

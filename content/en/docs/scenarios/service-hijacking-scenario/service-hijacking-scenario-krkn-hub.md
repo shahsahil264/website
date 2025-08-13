@@ -2,7 +2,7 @@
 title: Service Hijacking Scenario using Krkn-Hub
 description: >
 date: 2017-01-05
-weight: 4
+weight: 2
 ---
 This scenario reroutes traffic intended for a target service to a custom web service that is automatically deployed by Krkn. 
 This web service responds with user-defined HTTP statuses, MIME types, and bodies. 

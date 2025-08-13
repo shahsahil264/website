@@ -2,7 +2,7 @@
 title: Memory Hog Scenarios using Krkn
 description: 
 date: 2017-01-04
-weight: 2
+weight: 1
 ---
 To enable this plugin add the pointer to the scenario input file `scenarios/kube/memory-hog.yml` as described in the 
 [Usage](#usage) section.

@@ -2,7 +2,7 @@
 title: Container Scenarios using Krkn-hub
 description: >
 date: 2017-01-05
-weight: 4
+weight: 2
 ---
 This scenario disrupts the containers matching the label in the specified namespace on a Kubernetes/OpenShift cluster.
 

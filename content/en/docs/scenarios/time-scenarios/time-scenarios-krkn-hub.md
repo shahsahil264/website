@@ -2,7 +2,7 @@
 title: Time Skew Scenarios using Krkn-Hub
 description: >
 date: 2017-01-05
-weight: 4
+weight: 2
 ---
 This scenario skews the date and time of the nodes and pods matching the label on a Kubernetes/OpenShift cluster. More information can be found [here](/docs/scenarios/time-scenarios/_index.md).
 

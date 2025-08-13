@@ -2,7 +2,7 @@
 title: Power Outage Scenario using Krkn-Hub
 description: >
 date: 2017-01-05
-weight: 4
+weight: 2
 ---
 This scenario shuts down Kubernetes/OpenShift cluster for the specified duration to simulate power outages, brings it back online and checks if it's healthy. More information can be found [here](/docs/scenarios/power-outage-scenarios/_index.md)
 
