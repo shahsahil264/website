@@ -216,11 +216,7 @@ class DocumentationIndex {
         const relativePath = path.relative(path.join(__dirname, '../../content/en'), filePath);
         let url = '/' + relativePath.replace(/\\/g, '/').replace(/\.md$/, '/').replace(/_index\/$/, '');
         
-        // Clean up the URL
         url = url.replace(/\/+/g, '/');
-        if (url !== '/' && url.endsWith('/')) {
-            url = url.slice(0, -1);
-        }
         
         return url || '/';
     }
