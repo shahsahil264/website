@@ -5,9 +5,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'content/en/docs/**/*.md'
-      - 'content/en/docs/**/*.markdown'
-      - 'content/en/**/_index.md'
+      - 'content/en/**/*.md'
   
   # Allow manual triggering
   workflow_dispatch:
