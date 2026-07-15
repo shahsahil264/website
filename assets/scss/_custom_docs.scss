@@ -2112,7 +2112,7 @@ table tbody tr:hover {
   justify-content: center;
   gap: 0.5rem;
   background: var(--krkn-primary);
-  color: #fff;
+  color: var(--krkn-bg);
   border: none;
   border-radius: 0.625rem;
   padding: 0.875rem 2.5rem;
@@ -2140,9 +2140,14 @@ table tbody tr:hover {
   }
 }
 
+.krkn-feedback__success-icon {
+  color: var(--krkn-secondary);
+  margin-bottom: 1rem;
+}
+
 .krkn-feedback__success {
   background: var(--krkn-surface);
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  border: 1px solid var(--krkn-border-subtle);
   border-radius: 1rem;
   padding: 3rem 2rem;
   text-align: center;
