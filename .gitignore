@@ -43,3 +43,6 @@ api/server.log
 screenshots/
 scripts/
 .beads
+
+# Local Netlify folder
+.netlify
