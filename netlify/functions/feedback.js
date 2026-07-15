@@ -177,7 +177,7 @@ exports.handler = async (event) => {
     const { JIRA_BASE_URL, JIRA_PROJECT_KEY, JIRA_API_TOKEN, JIRA_USER_EMAIL } =
       process.env;
 
-    if (!JIRA_BASE_URL || !JIRA_PROJECT_KEY || !JIRA_API_TOKEN || !JIRA_USER_EMAIL) {
+    if (!JIRA_BASE_URL || !JIRA_PROJECT_KEY || !JIRA_API_TOKEN) {
       console.error('Missing Jira configuration environment variables');
       return {
         statusCode: 500,
@@ -200,16 +200,16 @@ exports.handler = async (event) => {
       },
     };
 
-    const authToken = Buffer.from(
-      `${JIRA_USER_EMAIL}:${JIRA_API_TOKEN}`
-    ).toString('base64');
+    const authHeader = JIRA_USER_EMAIL
+      ? `Basic ${Buffer.from(`${JIRA_USER_EMAIL}:${JIRA_API_TOKEN}`).toString('base64')}`
+      : `Bearer ${JIRA_API_TOKEN}`;
 
     const jiraResponse = await axios.post(
       `${JIRA_BASE_URL}/rest/api/2/issue`,
       jiraPayload,
       {
         headers: {
-          Authorization: `Basic ${authToken}`,
+          Authorization: authHeader,
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
