@@ -3,8 +3,18 @@ const axios = require('axios');
 const rateLimits = new Map();
 const RATE_LIMIT = 3;
 const RATE_WINDOW_MS = 60 * 60 * 1000;
+const RATE_LIMIT_MAX_ENTRIES = 1000;
+
+function pruneRateLimits() {
+  if (rateLimits.size <= RATE_LIMIT_MAX_ENTRIES) return;
+  const now = Date.now();
+  for (const [ip, entry] of rateLimits) {
+    if (now - entry.firstRequestTime > RATE_WINDOW_MS) rateLimits.delete(ip);
+  }
+}
 
 function checkRateLimit(ip) {
+  pruneRateLimits();
   const now = Date.now();
   const entry = rateLimits.get(ip);
   if (!entry || now - entry.firstRequestTime > RATE_WINDOW_MS) {
@@ -46,6 +56,8 @@ const REQUIRED_FIELDS = [
   'summary',
   'details',
 ];
+
+const VALID_FEEDBACK_TYPES = Object.keys(FEEDBACK_TYPE_LABELS);
 
 function sanitize(str) {
   if (typeof str !== 'string') return '';
@@ -128,9 +140,18 @@ exports.handler = async (event) => {
     };
   }
 
+  let body;
   try {
-    const body = JSON.parse(event.body);
+    body = JSON.parse(event.body || '{}');
+  } catch (e) {
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ error: 'Invalid request body' }),
+    };
+  }
 
+  try {
     if (body.website_url) {
       return {
         statusCode: 200,
@@ -171,6 +192,14 @@ exports.handler = async (event) => {
         statusCode: 400,
         headers,
         body: JSON.stringify({ error: 'Invalid email address' }),
+      };
+    }
+
+    if (!VALID_FEEDBACK_TYPES.includes(body.feedback_type)) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'Invalid feedback type' }),
       };
     }
 

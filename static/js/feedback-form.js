@@ -146,6 +146,11 @@
       body: JSON.stringify(collectFormData()),
     })
       .then(function (response) {
+        var contentType = response.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+          if (!response.ok) throw new Error('Submission failed');
+          return {};
+        }
         return response.json().then(function (data) {
           if (!response.ok) {
             throw new Error(data.error || 'Submission failed');
