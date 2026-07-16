@@ -463,6 +463,7 @@
   if (!sidebar) return;
 
   var handle = null;
+  var isDragging = false;
   var startX, startW;
 
   function getX(e) {
@@ -474,26 +475,30 @@
     sidebar.style.setProperty('--krkn-sidebar-width', w + 'px');
   }
 
-  function onUp() {
-    handle.classList.remove('dragging');
+  function cleanupDrag() {
+    isDragging = false;
+    if (handle) handle.classList.remove('krkn-dragging');
     document.body.style.userSelect = '';
     document.removeEventListener('mousemove', onDrag);
-    document.removeEventListener('mouseup', onUp);
+    document.removeEventListener('mouseup', cleanupDrag);
     document.removeEventListener('touchmove', onDrag);
-    document.removeEventListener('touchend', onUp);
+    document.removeEventListener('touchend', cleanupDrag);
+    document.removeEventListener('touchcancel', cleanupDrag);
     localStorage.setItem('krkn-sidebar-width', sidebar.offsetWidth);
   }
 
   function onStart(e) {
     e.preventDefault();
+    isDragging = true;
     startX = getX(e);
     startW = sidebar.offsetWidth;
-    handle.classList.add('dragging');
+    if (handle) handle.classList.add('krkn-dragging');
     document.body.style.userSelect = 'none';
     document.addEventListener('mousemove', onDrag);
-    document.addEventListener('mouseup', onUp);
+    document.addEventListener('mouseup', cleanupDrag);
     document.addEventListener('touchmove', onDrag, { passive: false });
-    document.addEventListener('touchend', onUp);
+    document.addEventListener('touchend', cleanupDrag);
+    document.addEventListener('touchcancel', cleanupDrag);
   }
 
   function setup() {
@@ -506,6 +511,7 @@
       var saved = localStorage.getItem('krkn-sidebar-width');
       if (saved) sidebar.style.setProperty('--krkn-sidebar-width', saved + 'px');
     } else if (window.innerWidth < 1200 && handle) {
+      if (isDragging) cleanupDrag();
       handle.remove();
       handle = null;
       sidebar.style.removeProperty('--krkn-sidebar-width');
@@ -532,14 +538,14 @@
   document.body.appendChild(btn);
 
   function positionBtn() {
-    if (window.innerWidth < 1200 || row.classList.contains('toc-collapsed')) return;
+    if (window.innerWidth < 1200 || row.classList.contains('krkn-toc-collapsed')) return;
     var tocLeft = toc.getBoundingClientRect().left;
     btn.style.setProperty('--krkn-toc-btn-right', (window.innerWidth - tocLeft - 16) + 'px');
   }
 
   function applyState(collapsed) {
-    row.classList.toggle('toc-collapsed', collapsed);
-    document.body.classList.toggle('toc-collapsed', collapsed);
+    row.classList.toggle('krkn-toc-collapsed', collapsed);
+    document.body.classList.toggle('krkn-toc-collapsed', collapsed);
     if (!collapsed) requestAnimationFrame(function() { setTimeout(positionBtn, 320); });
   }
 
@@ -548,7 +554,7 @@
   window.addEventListener('resize', positionBtn);
 
   btn.addEventListener('click', function() {
-    var collapsed = !row.classList.contains('toc-collapsed');
+    var collapsed = !row.classList.contains('krkn-toc-collapsed');
     applyState(collapsed);
     localStorage.setItem('krkn-toc-collapsed', collapsed);
   });
