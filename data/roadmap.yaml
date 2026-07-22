@@ -7,7 +7,7 @@ releases:
       - "Chaos Studio"
       - "Resiliency Score"
 
-  - version: "v0.5.0-beta"
+  - version: "v1.0.0"
     title: "OCM Cluster communication improvements"
     date: "2026-08-09"
     status: in-progress
@@ -15,8 +15,9 @@ releases:
       - "Scenario Save/Replay"
       - "[Cluster Proxy](https://open-cluster-management.io/docs/getting-started/integration/cluster-proxy/) Support"
       - "Per node resiliency score"
+      - "Save/Edit/Delete Workflow Templates"
 
-  - version: "v0.6.0-beta"
+  - version: "v1.0.1"
     title: "Scenario Rollback"
     date: "2026-09-09"
     status: planned
@@ -25,4 +26,5 @@ releases:
       - "Cluster liveness check"
       - "Operator Hub distribution channel"
       - "Chaos Studio scenario import"
+      - "Elasticsearch views (summary charts, metric views, and alerts)"
 
