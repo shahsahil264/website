@@ -25,3 +25,20 @@ Configure target providers that integrate with external cluster management platf
 {{% notice info %}}
 The provider configuration interface is designed to be extensible. As new integration operators are developed, their configuration panels will appear automatically in this section.
 {{% /notice %}}
+
+---
+
+## Cloud Provider Configuration
+
+Some chaos scenarios interact directly with cloud infrastructure and require cloud provider credentials (AWS, GCP, Azure, OpenStack, etc.) to perform node-level operations. The following scenarios are not currently available in Krkn Operator until cloud provider configuration support is added:
+
+| Scenario | Why Cloud Provider Is Required |
+|----------|-------------------------------|
+| **node-scenarios** | Stops, terminates, or reboots nodes via the cloud provider API |
+| **node-scenarios-bm** | Controls bare metal nodes via BMC/IPMI credentials |
+| **power-outages** | Shuts down and restarts the entire cluster through the cloud provider |
+| **zone-outages** | Simulates availability zone failures by manipulating cloud network resources |
+
+{{% notice warning %}}
+Cloud provider configuration is [not yet supported](https://github.com/krkn-chaos/krkn-operator/issues/43) in Krkn Operator. The scenarios above cannot be executed until cloud provider credential management is introduced. This page will be updated when that support becomes available.
+{{% /notice %}}
