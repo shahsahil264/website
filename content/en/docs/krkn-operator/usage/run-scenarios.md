@@ -63,6 +63,23 @@ You can **select** from saved Elasticsearch configurations but **cannot add** ne
 
 Selecting an Elasticsearch configuration automatically applies connection details (URL, index, credentials) without requiring manual input.
 
+#### Load Cloud Credential
+
+When a scenario declares cloud-related fields (`CLOUD_TYPE`, `AWS_*`, `AZURE_*`, and similar), a **Load Cloud Credential** section appears:
+
+1. Open **Load Cloud Credential**
+2. Select a saved credential from the dropdown (configured by your [admin](../../administration/cloud-credentials-management/))
+3. Matching cloud fields become read-only and show masked placeholders
+4. Continue configuring non-cloud parameters as usual
+
+The dropdown only lists credentials your group can access, filtered to providers relevant to the selected scenario.
+
+{{% notice info %}}
+You can **select** from saved cloud credentials but **cannot create** new ones. Contact your administrator to add or rotate cloud credentials.
+{{% /notice %}}
+
+Selecting a credential stores only the credential **name** on the run. The operator injects secret values into the scenario pod via `SecretKeyRef` — plaintext cloud keys are not written into the Custom Resource.
+
 ![Mandatory Parameters](/images/krkn-operator/scenario-mandatory.png)
 ![Optional Parameters](/images/krkn-operator/scenario-optional.png)
 ![Global Options](/images/krkn-operator/scenario-global.png)
