@@ -83,10 +83,15 @@ Configure **Elasticsearch** in global parameters to track metrics across all nod
 
 ### Cloud Credentials in Workflows
 
-Cloud-dependent nodes can use saved credentials configured under [Cloud Credentials Management](../../administration/cloud-credentials-management/):
+Cloud-dependent nodes can use saved credentials configured under [Cloud Credentials Management](../../administration/cloud-credentials-management/).
 
-- **Workflow default**: set a credential once for the whole graph so every node inherits it
-- **Per-node override**: select a different credential on a specific node when that scenario needs another provider or account
+When configuring a node:
+
+1. Open **Load Cloud Credential**
+2. Select a credential available to your group
+3. Cloud fields for that provider become masked; other providers' fields are hidden
+
+Each node can select its own credential (for example one AWS credential on a zone-outage node and a BMC credential on a power-outage node).
 
 {{% notice info %}}
 You can **select** credentials available to your group but **cannot create** new ones from Chaos Studio. Contact your administrator to add credentials.

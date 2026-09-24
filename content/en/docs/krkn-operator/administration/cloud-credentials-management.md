@@ -38,7 +38,17 @@ Users can **select** saved cloud credentials they are allowed to see, but **cann
 | **VMware** | vSphere-backed node scenarios |
 | **IBM Cloud** | IBM Cloud infrastructure scenarios |
 
-When a credential is applied, the platform also sets `CLOUD_TYPE` to the value expected by krkn-hub for that provider (for example baremetal → `bm`).
+When a credential is applied, the platform also sets `CLOUD_TYPE` to the value expected by krkn-hub for that provider:
+
+| Provider | `CLOUD_TYPE` value |
+|----------|--------------------|
+| AWS | `aws` |
+| GCP | `gcp` |
+| Azure | `azure` |
+| OpenStack | `openstack` |
+| Baremetal | `bm` |
+| VMware | `vmware` |
+| IBM Cloud | `ibmcloud` |
 
 ---
 
@@ -46,20 +56,80 @@ When a credential is applied, the platform also sets `CLOUD_TYPE` to the value e
 
 1. Navigate to **Settings** > **Cloud Credentials**
 2. Click **Create Cloud Credential** (or the add action)
-3. Configure the following details:
+3. Configure the common fields, then the provider-specific fields below
+4. Click **Save** to create the credential
+
+### Common fields
 
 | Field | Description | Required |
 |-------|-------------|----------|
-| **Name** | Unique credential name (used when users select it) | Yes |
-| **Provider** | Cloud provider (AWS, GCP, Azure, OpenStack, Baremetal, VMware, IBM Cloud) | Yes |
-| **Description** | Short note for operators (optional) | No |
+| **Name** | Unique credential name (used when users select it). Lowercase alphanumeric and hyphens | Yes |
+| **Provider** | Cloud provider (cannot be changed after create) | Yes |
+| **Description** | Short note for operators | No |
 | **Visibility** | **Everyone** or **Group-based** access | Yes |
-| **Provider fields** | Access keys, regions, service-account JSON, BMC details, and so on — vary by provider | Yes (per provider) |
 
-4. Click **Save** to create the credential
+### Provider-specific fields
+
+#### AWS
+
+| Field | Required |
+|-------|----------|
+| Access Key ID | Yes |
+| Secret Access Key | Yes |
+| Default Region | Yes |
+
+#### GCP
+
+| Field | Required |
+|-------|----------|
+| Service Account JSON (base64-encoded) | Yes |
+
+GCP credentials are mounted into the scenario pod as a file. The operator also sets `GOOGLE_APPLICATION_CREDENTIALS` to that mount path.
+
+#### Azure
+
+| Field | Required |
+|-------|----------|
+| Tenant ID | Yes |
+| Client ID | Yes |
+| Client Secret | Yes |
+| Subscription ID | Yes |
+
+#### OpenStack
+
+| Field | Required |
+|-------|----------|
+| Auth URL | Yes |
+| Username | Yes |
+| Password | Yes |
+| Project Name | Yes |
+| Domain Name | No (optional; injected only when present on the Secret) |
+
+#### Baremetal (IPMI/BMC)
+
+| Field | Required |
+|-------|----------|
+| BMC User | Yes |
+| BMC Password | Yes |
+| BMC Address | Yes |
+
+#### VMware
+
+| Field | Required |
+|-------|----------|
+| vSphere IP | Yes |
+| vSphere Username | Yes |
+| vSphere Password | Yes |
+
+#### IBM Cloud
+
+| Field | Required |
+|-------|----------|
+| IBM Cloud URL | Yes |
+| API Key | Yes |
 
 {{% notice warning %}}
-The name `available` is reserved and cannot be used as a credential name.
+These credential **names** are reserved and cannot be used: `available`, `aws`, `gcp`, `azure`, `openstack`, `baremetal`, `vmware`, `ibmcloud`.
 {{% /notice %}}
 
 ---
@@ -98,7 +168,7 @@ Admins can filter the list by name, provider, and access type.
 2. Update description, visibility, groups, or provider secret fields
 3. Click **Save**
 
-Secret values are never shown after creation. Leave a secret field empty to keep the existing value; provide a new value only when rotating credentials.
+The **provider cannot be changed** after creation — create a new credential if you need a different provider. Secret values are never shown after creation. Leave a secret field empty to keep the existing value; provide a new value only when rotating credentials.
 
 {{% notice warning %}}
 Editing a saved credential affects **future** scenario executions that select it. Already running pods keep the Secret values they started with.
@@ -141,14 +211,12 @@ When a run references a cloud credential:
 When configuring parameters for a [single scenario](../../usage/run-scenarios/) or a [Chaos Studio](../../usage/chaos-studio/) node:
 
 1. Open the **Load Cloud Credential** section (shown when the scenario has cloud-related fields)
-2. Select a saved credential from the dropdown
-3. Cloud fields (`AWS_*`, `AZURE_*`, `CLOUD_TYPE`, and so on) become read-only / masked
-4. Continue configuring non-cloud parameters and run the scenario
+2. Select a saved credential from the dropdown (only credentials your group can access)
+3. Matching cloud fields become read-only and show masked placeholders (`••••••••`)
+4. Fields for **other** cloud providers are hidden so the form only shows the applied provider
+5. Continue configuring non-cloud parameters and run the scenario
 
-In Chaos Studio you can set:
-
-- A **workflow-level** default credential for all nodes
-- A **per-node** override when a specific scenario needs a different provider or account
+In **Chaos Studio**, set the credential **per node** when configuring that node's scenario. Each cloud-dependent node can use a different credential.
 
 ---
 
