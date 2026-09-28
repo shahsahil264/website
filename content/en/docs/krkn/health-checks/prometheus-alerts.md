@@ -90,51 +90,13 @@ The same alert health-check settings are available through Krkn, Krkn-Hub, and K
 
 {{< tabpane text=true >}}
   {{< tab header="**Krkn**" lang="krkn" >}}
-
-  Configure the `performance_monitoring` section in `config.yaml`:
-
-  ```yaml
-  performance_monitoring:
-      prometheus_url: "http://prometheus.example.com"
-      prometheus_bearer_token: ""
-      enable_alerts: True
-      alert_profile: config/alerts.yaml
-      run_during: ["pre", "during", "post"]
-      exit_on_failure: True
-      only_failures: False
-  ```
-
+{{< readfile file="_tab-krkn.md" >}}
   {{< /tab >}}
   {{< tab header="**Krkn-Hub**" lang="krkn-hub" >}}
-
-  Set these environment variables before starting the scenario container:
-
-  ```bash
-  export PROMETHEUS_URL="http://prometheus.example.com"
-  export PROMETHEUS_TOKEN=""
-  export ENABLE_ALERTS=True
-  export ALERTS_PATH=config/alerts.yaml
-  export ALERTS_RUN_DURING='[pre, during, post]'
-  export ALERTS_EXIT_ON_FAILURE=True
-  export ALERTS_ONLY_FAILURES=False
-  ```
-
+{{< readfile file="_tab-krkn-hub.md" >}}
   {{< /tab >}}
   {{< tab header="**Krknctl**" lang="krknctl" >}}
-
-  Pass the global alert options to the scenario command:
-
-  ```bash
-  krknctl run pod-scenarios \
-    --prometheus-url http://prometheus.example.com \
-    --prometheus-token "" \
-    --enable-alerts True \
-    --alerts-path config/alerts.yaml \
-    --alerts-run-during '["pre", "during", "post"]' \
-    --alerts-exit-on-failure True \
-    --alerts-only-failures False
-  ```
-
+{{< readfile file="_tab-krknctl.md" >}}
   {{< /tab >}}
 {{< /tabpane >}}
 
