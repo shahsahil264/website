@@ -231,18 +231,18 @@ params:
   group: performance_monitoring
   default: config/alerts.yaml
 - name: ALERTS_RUN_DURING
-  description: 'Phases for Prometheus alert health checks: pre, during, post, or a comma-separated combination'
-  description_source: krknctl
+  description: 'Prometheus alert health-check phases: pre, during, post, or a list of phases'
+  description_source: published-table
   group: performance_monitoring
-  default: ''
+  default: during
 - name: ALERTS_EXIT_ON_FAILURE
-  description: Fail the run when a critical or error Prometheus alert health check fails
-  description_source: krknctl
+  description: Fail the run for critical or error alert evaluations
+  description_source: published-table
   group: performance_monitoring
   default: 'False'
 - name: ALERTS_ONLY_FAILURES
-  description: Only include failed Prometheus alert evaluations in telemetry and reports
-  description_source: krknctl
+  description: Include only failed alert evaluations in telemetry and reports
+  description_source: published-table
   group: performance_monitoring
   default: 'False'
 - name: METRICS_PATH

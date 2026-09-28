@@ -16,8 +16,8 @@ performance_monitoring:
     check_critical_alerts: False                          # When enabled will check prometheus for critical alerts firing post chaos
 ```
 
-### Validation and alerting based on the queries defined by the user during chaos
-Takes PromQL queries as input and modifies the return code of the run to determine pass/fail. It's especially useful in case of automated runs in CI where user won't be able to monitor the system. This feature can be enabled in the [config](https://github.com/krkn-chaos/krkn/blob/main/config/config.yaml) by setting the following:
+### Validation and alerting based on the queries defined by the user
+Prometheus alert health checks take PromQL queries as input and evaluate them at configurable lifecycle phases. This is especially useful for automated CI runs. Configure them in the [config](https://github.com/krkn-chaos/krkn/blob/main/config/config.yaml) as follows:
 
 ```yaml
 performance_monitoring:
@@ -25,7 +25,14 @@ performance_monitoring:
     prometheus_bearer_token:                              # The bearer token is automatically obtained in case of OpenShift, please set it when the distribution is Kubernetes. This is needed to authenticate with prometheus.
     enable_alerts: True                                   # Runs the queries specified in the alert profile and displays the info or exits 1 when severity=error.
     alert_profile: config/alerts.yaml                          # Path to alert profile with the prometheus queries.
+    run_during: ["pre", "during", "post"]                # Evaluation phases
+    exit_on_failure: True                                  # Critical/error failures block the run
+    only_failures: False                                   # Include passing evaluations in telemetry
 ```
+
+Pre and post expressions use one instant Prometheus query per alert. During expressions are evaluated once after chaos and the configured `wait_duration`, using a range query covering the chaos and wait window. They are not queried on the regular health-check interval.
+
+Only `critical` and `error` alerts can fail the job when `exit_on_failure` is enabled. `warning` and `info` alerts remain non-blocking. Alert telemetry records the evaluation status and phase under `alerts`.
 
 #### Alert profile
 A couple of [alert profiles](https://github.com/krkn-chaos/krkn/tree/main/config) [alerts](https://github.com/krkn-chaos/krkn/blob/main/config/alerts.yaml) are shipped by default and can be tweaked to add more queries to alert on. User can provide a URL or path to the file in the [config](https://github.com/krkn-chaos/krkn/blob/main/config/config.yaml). The following are a few alerts examples:
