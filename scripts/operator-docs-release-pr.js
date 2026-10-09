@@ -13,6 +13,7 @@ const {
 const { createGithubClient } = require('./lib/operator-github-client');
 const {
   assertSameReleaseProvenance,
+  assertTrustedReleaseBranch,
   buildPullRequestBody,
   prepareReleaseBranch,
   releaseBranchName,
@@ -175,6 +176,7 @@ async function main() {
 
   const hasRemoteBranch = prepareReleaseBranch(repoRoot, branch, git, remoteBranchExists);
 
+  assertTrustedReleaseBranch(repoRoot, releaseInputs.tag, git);
   const branchRegistry = readRegistry(repoRoot);
   const adoptionBoundary = branchRegistry.adoption_boundary_published_at;
   if (shouldIgnoreReleaseAtAdoptionBoundary(branchRegistry, releaseInputs, bootstrapInputs)) {

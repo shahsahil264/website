@@ -14,6 +14,7 @@ const {
   isBeforeAdoptionBoundary,
   mergeMainWithBotIdentity,
   prepareReleaseBranch,
+  assertTrustedReleaseBranch,
   stageSnapshotChanges,
   releaseBranchName,
   sameReleaseProvenance,
@@ -39,6 +40,22 @@ test('release preparation queues every release instead of replacing pending runs
   assert.equal(workflow.concurrency.group, 'operator-docs-release-preparation');
   assert.equal(workflow.concurrency.queue, 'max');
   assert.equal(workflow.concurrency['cancel-in-progress'], false);
+});
+
+test('manual bootstrap workflow accepts and forwards the pinned website commit and chart version', () => {
+  const workflowPath = path.join(__dirname, '../../.github/workflows/operator-docs-release.yml');
+  const workflow = YAML.parse(fs.readFileSync(workflowPath, 'utf8'));
+  const inputs = workflow.on.workflow_dispatch.inputs;
+  const prepare = workflow.jobs.prepare.steps.find((step) => step.name === 'Resolve release inputs, validate, and prepare PR');
+
+  assert.ok(inputs.bootstrap_website_commit, 'manual workflow must expose the pinned Website commit');
+  assert.ok(inputs.bootstrap_chart_version, 'manual workflow must expose the chart version');
+  assert.equal(inputs.bootstrap_website_commit.required, false);
+  assert.equal(inputs.bootstrap_chart_version.required, false);
+  assert.match(prepare.env.BOOTSTRAP_WEBSITE_COMMIT, /inputs\.bootstrap_website_commit/);
+  assert.match(prepare.env.BOOTSTRAP_CHART_VERSION, /inputs\.bootstrap_chart_version/);
+  assert.match(prepare.run, /--bootstrap-website-commit/);
+  assert.match(prepare.run, /--bootstrap-chart-version/);
 });
 
 test('duplicate notifications compare equal only when complete release provenance matches', () => {
@@ -121,19 +138,41 @@ test('bootstrap inputs stop after adoption except for an identical retry of the 
   );
 });
 
-test('explicit bootstrap inputs cannot create a new release mapping after adoption', () => {
+test('bootstrap can register the first release after the adoption cutoff but cannot introduce another release', () => {
   const registry = {
     adoption_boundary_published_at: release.published_at,
-    releases: [{ ...release }],
+    releases: [{
+      ...release,
+      tag: 'v1.0.0',
+      github_release_id: 100,
+      published_at: '2026-08-17T19:37:57Z',
+    }],
   };
   const laterRelease = {
     ...release,
-    tag: 'v1.2.0',
-    published_at: '2026-10-09T00:00:00Z',
+    tag: 'v1.1.0',
+    published_at: '2026-10-09T17:19:38Z',
   };
 
+  assert.equal(shouldIgnoreReleaseAtAdoptionBoundary(registry, laterRelease, {
+    website_commit: 'c'.repeat(40),
+    helm_chart_version: '1.1.0',
+  }), false);
+
+  const registeredBootstrap = {
+    ...laterRelease,
+    website_commit: 'c'.repeat(40),
+    helm_chart_version: '1.1.0',
+  };
   assert.throws(
-    () => shouldIgnoreReleaseAtAdoptionBoundary(registry, laterRelease, {
+    () => shouldIgnoreReleaseAtAdoptionBoundary({
+      ...registry,
+      releases: [...registry.releases, registeredBootstrap],
+    }, {
+      ...laterRelease,
+      tag: 'v1.2.0',
+      published_at: '2026-11-09T00:00:00Z',
+    }, {
       website_commit: 'c'.repeat(40),
       helm_chart_version: '1.2.0',
     }),
@@ -189,6 +228,27 @@ test('merging a refreshed main branch has bot identity configured before a merge
   } finally {
     fs.rmSync(repoRoot, { recursive: true, force: true });
   }
+});
+
+
+test('release branch validation blocks unreviewed executable changes before checks run', () => {
+  const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'operator-docs-trust-'));
+  const git = (args) => execFileSync('git', args, { cwd: repoRoot, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  const write = (name, value) => { const target = path.join(repoRoot, name); fs.mkdirSync(path.dirname(target), { recursive: true }); fs.writeFileSync(target, value); };
+  const runGit = (root, args) => execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  try {
+    git(['init', '-q', '--initial-branch=main']); git(['config','user.name','Test']); git(['config','user.email','test@example.invalid']);
+    write('README.md','base\n'); git(['add','.']); git(['commit','-qm','base']); git(['update-ref','refs/remotes/origin/main','HEAD']);
+    git(['checkout','-qb','release']); write('content/en/docs/krkn-operator/versions/v1.2.0/_index.md','safe\n'); git(['add','.']); git(['commit','-qm','snapshot']);
+    assert.equal(assertTrustedReleaseBranch(repoRoot,'v1.2.0',runGit),true);
+    write('scripts/steal-token.js','process.env.GITHUB_TOKEN\n'); git(['add','.']); git(['commit','-qm','untrusted code']);
+    assert.throws(()=>assertTrustedReleaseBranch(repoRoot,'v1.2.0',runGit),/untrusted changes.*scripts\/steal-token.js/);
+    git(['checkout','-q','HEAD~1']); git(['checkout','-qb','symlink-check']);
+    fs.rmSync(path.join(repoRoot,'content/en/docs/krkn-operator/versions/v1.2.0/_index.md'));
+    fs.symlinkSync('../../../../../../.git/config',path.join(repoRoot,'content/en/docs/krkn-operator/versions/v1.2.0/_index.md'));
+    git(['add','-A']); git(['commit','-qm','unsafe symlink']);
+    assert.throws(()=>assertTrustedReleaseBranch(repoRoot,'v1.2.0',runGit),/untrusted symlinks/);
+  } finally { fs.rmSync(repoRoot,{recursive:true,force:true}); }
 });
 
 test('snapshot staging ignores generated search-index edits and stages only release-owned files', () => {

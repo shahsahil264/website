@@ -10,15 +10,20 @@ the newest stable snapshot that has been reviewed and deployed.
 ## What happens for each release
 
 1. **The docs author updates the Website source.** Open a normal pull request
-   to `krkn-chaos/website:main`. Edit files under
+   to `krkn-chaos/website:main` from a branch named
+   `docs/operator-source/vMAJOR.MINOR.PATCH`. The branch identifies the release
+   for the merged-PR Action; prerelease suffixes are rejected. Edit files under
    `content/en/docs/krkn-operator/`; do not edit generated files under
    `versions/`. The source PR can add, remove, or rename pages and change
    layouts, images, and videos. Keep `operator_docs_page_key` in front matter
    when a renamed page should retain its previous identity.
-2. **A maintainer merges the docs PR.** Record its exact merge commit SHA.
-3. **The release maintainer adds the release mapping to the Operator release
-   commit.** In `docs/website-release.yaml`, add the Website commit and chart
-   version for the exact stable Operator tag. For example:
+2. **A maintainer merges the docs PR.** The Website Action reads the merged PR
+   from GitHub, verifies its merge commit is in `main`, and creates an Operator
+   metadata PR against the existing `release-MAJOR.MINOR` branch. It records
+   the exact Website merge SHA and derives the chart version from the tag.
+3. **A maintainer reviews and merges the generated Operator metadata PR before
+   tagging the release.** The Action writes this tag-keyed mapping to
+   `docs/website-release.yaml`, preserving previous entries:
 
    ```yaml
    schema_version: 1
@@ -29,13 +34,15 @@ the newest stable snapshot that has been reviewed and deployed.
    ```
 
    The chart version is the Operator tag without its leading `v`. The release
-   workflows validate that the tag has a matching metadata entry before they
-   publish. No metadata PR is generated; the mapping is part of the release
-   commit so the tag identifies its documentation source.
+   receiver validates that the tag has a matching metadata entry. There is no
+   manual SHA or chart-version copying. The merged metadata becomes part of
+   the release commit, so the tag identifies its documentation source.
 4. **The release maintainer publishes the stable Operator tag and chart** using
    the normal release process. Prerelease tags are not versioned. After chart
    publication succeeds, the Operator workflow automatically notifies the
-   Website. No one manually dispatches the Website workflow.
+   Website. A publication-completion notification also permits a retry if the
+   release and chart become visible at different times. Duplicate notices reuse
+   one snapshot PR. No one manually dispatches the normal release workflow.
 5. **The Website receiver verifies the release inputs** from the tag, checks
    the pinned Website commit is in reviewed `main` history, and verifies the
    published chart and its `appVersion`. It captures the Markdown, images,
@@ -65,9 +72,14 @@ frozen snapshot. It is captured from Website commit
 those pages. The adoption boundary is the publication time of stable
 `v1.0.10` (`2026-09-26T13:03:34Z`), so the automation will not reconstruct
 other releases published at or before that point. It will not label 1.1 source
-docs as 1.0 docs. Tullio's 1.1.0 source PR remains a separate authoring change;
-when a stable 1.1.0 release is published, its snapshot will become the new
-default after its Website snapshot PR is merged. Until then, unversioned links
+docs as 1.0 docs. Website PR #681 is the separate 1.1.0 authoring change.
+Because v1.1.0 is already published without metadata, its source-merge Action
+uses the reviewed merge commit as the one-time bootstrap input and verifies
+the existing release and published chart through the same receiver. It never
+rewrites the Operator tag. Bootstrap is closed once a release at or after the
+adoption cutoff is captured; identical retries of a registered release remain
+allowed. Its snapshot becomes the new default after the generated Website
+snapshot PR is merged. Until then, unversioned links
 resolve to the preserved v1.0.0 snapshot after the initial versioning PR is
 deployed. Prereleases never appear in the selector.
 
@@ -80,19 +92,21 @@ used.
 
 The automation becomes active after the Website receiver and Operator release
 workflows are merged and the GitHub App is configured in both repositories.
-The Website App needs permission to receive the Operator dispatch and open
-Website branches and pull requests. The Operator workflow needs permission to
-dispatch to the Website repository. Configure the existing
+Install the App for both `krkn-chaos/website` and `krkn-chaos/krkn-operator`
+with Contents and Pull requests write permissions. The Website Action creates
+the Operator metadata PR; the receiver creates the Website snapshot PR. The
+Operator notifier requests only Website Contents write for dispatch. Configure the existing
 `DOC_SYNC_BOT_APP_ID` variable and `DOC_SYNC_BOT_APP_PRIVATE_KEY` secret as
 required by each workflow; do not substitute a personal access token.
 
 For the initial rollout, merge the Website versioning PR with the preserved
 v1.0.0 snapshot and deploy its receiver first. Configure and test the App, then
 merge the Operator notifier PR. The stable version lookup fix in Website PR
-#660 is independent and may merge separately. Tullio's new 1.1.0 documentation
-remains a normal Website source PR; it does not need to be rebased onto the
-versioning branch. Merge it before the stable Operator 1.1.0 release, then put
-its merge SHA and chart version in the Operator release metadata.
+#660 is independent and may merge separately. After #680 is merged and
+deployed, rebase source PR #681 onto updated `main`, review its preview, and
+merge it. That merge automatically prepares the initial 1.1.0 snapshot PR.
+For subsequent releases, merge the generated Operator metadata PR before
+creating the tag, then review and merge the generated Website snapshot PR.
 
 ## Local previews and checks
 
@@ -115,7 +129,9 @@ and integrity checks.
 ## Retries, corrections, and rollback
 
 If an Action fails, its summary and logs identify the missing prerequisite.
-Fix that issue and rerun the same workflow for the same tag. The receiver
+Fix that issue and rerun the same workflow for the same tag. To retry metadata
+preparation, run `Prepare Operator release documentation metadata` with the
+merged source PR number; no source SHA or chart-version input is needed. The receiver
 retries temporary release or chart publication delays and does not open a
 partial snapshot PR. A tag already registered with different provenance fails
 rather than being overwritten or retagged.

@@ -19,7 +19,13 @@ function assertBootstrapInputsAllowed(registry, tag, bootstrapInputs) {
 
   const registeredRelease = (registry.releases || []).find((release) => release.tag === tag);
   if (!registeredRelease) {
-    throw new Error('bootstrap inputs are only accepted before the adoption boundary');
+    const adoptedRelease = (registry.releases || []).some((release) =>
+      Date.parse(release.published_at) >= Date.parse(registry.adoption_boundary_published_at)
+    );
+    if (adoptedRelease) {
+      throw new Error('bootstrap inputs are only accepted before the adoption boundary');
+    }
+    return;
   }
   if (
     registeredRelease.website_commit !== bootstrapInputs.website_commit ||
@@ -54,6 +60,30 @@ function prepareReleaseBranch(repoRoot, branch, runGit, remoteBranchExists) {
     runGit(repoRoot, ['checkout', '-b', branch, 'origin/main']);
   }
   return hasRemoteBranch;
+}
+
+function assertTrustedReleaseBranch(repoRoot, tag, runGit) {
+  if (typeof runGit !== 'function') throw new Error('runGit must be a function');
+  releaseBranchName(tag);
+  const changedPaths = runGit(repoRoot, ['diff', '--name-only', 'origin/main...HEAD'])
+    .split('\n').filter(Boolean);
+  const allowed = (file) => file === 'data/operator_doc_versions.yaml' ||
+    file === `operator-docs/snapshots/${tag}.json` ||
+    file.startsWith(`content/en/docs/krkn-operator/versions/${tag}/`) ||
+    file.startsWith(`static/operator-docs/${tag}/`) ||
+    file.startsWith(`data/operator_docs/releases/${tag}/`);
+  const unexpected = changedPaths.filter((file) => !allowed(file));
+  if (unexpected.length) {
+    throw new Error(`untrusted changes on existing snapshot branch: ${unexpected.join(', ')}`);
+  }
+  if (changedPaths.length) {
+    const tree = runGit(repoRoot, ['ls-tree', '-rz', 'HEAD', '--', ...changedPaths]);
+    const symlinks = tree.split('\0').filter((entry) => entry.startsWith('120000 blob '));
+    if (symlinks.length) {
+      throw new Error(`untrusted symlinks on existing snapshot branch: ${symlinks.map((entry) => entry.split('\t').pop()).join(', ')}`);
+    }
+  }
+  return true;
 }
 
 function stageSnapshotChanges(repoRoot, tag, runGit) {
@@ -185,6 +215,7 @@ function buildPullRequestBody(release, integrity) {
 module.exports = {
   assertBootstrapInputsAllowed,
   assertSameReleaseProvenance,
+  assertTrustedReleaseBranch,
   buildPullRequestBody,
   isBeforeAdoptionBoundary,
   mergeMainWithBotIdentity,

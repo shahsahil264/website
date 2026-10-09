@@ -2,49 +2,25 @@
 
 ## Execution status — 2026-10-09
 
-- Website PR #680 branch `docs/operator-docs-versioning` is being updated from
-  an isolated checkout after preserving the existing `stash@{0}` on the
-  original dirty `main` checkout. The source workspace remains available at
-  `/Users/sahil/website-1`.
-- User updated the release policy to stable releases only. Eligibility requires
-  both GitHub `prerelease: false` and a plain `vMAJOR.MINOR.PATCH` tag with no
-  suffix. GitHub currently mislabels `v1.1.0-rc1` through `rc7` as
-  non-prereleases, so the tag-shape check is required. The newest stable tag
-  verified from GitHub is `v1.0.10`.
-- Removed the `v1.1.0-rc7` release entry and snapshot from the Website branch.
-- Captured the current `v1.0.0` docs from Website commit
-  `7c35229ddbec37d65ef6a9c53945443b6fa8bf6e` as the initial selectable
-  snapshot. The inclusive `v1.0.10` adoption cutoff remains
-  `2026-09-26T13:03:34Z`; automation ignores unregistered releases at or
-  before it. Tullio's 1.1.0 docs stay in a separate Website source PR and are
-  not mixed into the 1.0.0 snapshot.
-- Website stable-only checks cover registry validation, snapshot planning,
-  release resolution, and synthetic site fixtures. `npm run check:operator-docs`,
-  all 63 unit tests, both generated site tests, the Hugo production rendering
-  (342 pages), and `git diff --check` pass. The strict link-check stage cannot
-  bind its local server in this sandbox. The v1.0.0 published chart was
-  verified with Helm as chart `1.0.0`, `appVersion: v1.0.0`.
-- The Website release receiver and tag-keyed metadata parser are present
-  locally. Operator PR #158 sends the post-publication notification; its
-  release commit must already contain the manually recorded metadata.
-- The Operator checkout is `/private/tmp/krkn-operator-pr158-review`, currently
-  detached at `46d8567c`. Stable-only notifier changes are uncommitted in
-  `.github/workflows/notify-operator-docs.yml`,
-  `scripts/notify-operator-docs.sh`, and
-  `scripts/tests/notify-operator-docs.test.js`. Its notifier test suite passes
-  6 tests and `bash -n` passes. PR #158 is open at remote head
-  `8919a4f529504b1bf700f09c53bc9a01a00cb737`; local changes still need to be
-  reconciled with that head before updating the PR.
-- A local-only Beads workspace exists at
-  `/private/tmp/krkn-operator-beads/.beads`; task `tsebastiani-1h4` tracks this
-  implementation. It has no remote and is not synced.
-- Website PR #680 and Operator PR #158 remain separate. Do not merge or deploy.
-  Do not wait for GitHub checks; finish local implementation and review the
-  resulting PR diffs directly.
+- Website infrastructure is on local branch `operator-docs-versioning` in
+  `/Users/sahil/website-1`, updating PR #680. Operator integration is separate
+  in `/private/tmp/krkn-operator-docs-fixes`, updating PR #158.
+- Stable tags only: both `prerelease: false` and `vMAJOR.MINOR.PATCH` are required.
+- Frozen v1.0.0 preserves Website commit `7c35229ddbec37d65ef6a9c53945443b6fa8bf6e`.
+  The inclusive v1.0.10 adoption cutoff is `2026-09-26T13:03:34Z`.
+- Source PR #681 prepares v1.1.0 in the editable authoring tree. The published
+  v1.1.0 tag predates metadata; its source merge triggers the initial bootstrap
+  automatically. Never assign the new source pages to the v1.0.0 snapshot.
+- Merged source PRs automatically prepare Operator metadata PRs targeting
+  `release-MAJOR.MINOR`. Humans review and merge before release tagging.
+- Production rendering and strict link verification passed: 342 pages and
+  301 links with no broken links. Local tests are rerun before pushing.
+- Beads is a local-machine tracker, with no remote synchronization configured.
+- Keep the repository PRs separate. Do not merge, deploy, or wait for GitHub CI.
 
 The release handover in [`docs/operator-docs-versioning.md`](../../operator-docs-versioning.md)
-describes the Website source PR, manually pinned release metadata, automated
-post-publication notification, and reviewed snapshot PR.
+describes source review, generated metadata PRs, publication notifications, and
+reviewed snapshot PRs.
 
 This plan implements the approved design in [the companion specification](../specs/2026-10-08-operator-docs-versioning-design.md). The detailed user-provided final plan is authoritative for requirements; this file records its execution order and repository handoff.
 
@@ -57,8 +33,8 @@ This plan implements the approved design in [the companion specification](../spe
 - Admit only tags matching `vMAJOR.MINOR.PATCH` and GitHub releases with `prerelease: false`. Derive the default among merged entries by publication time and numeric release ID; never use `/releases/latest` or alphabetic tag ordering.
 - Keep site-wide search on the default Operator snapshot. Preserve all other products' content, navigation, search, and print behavior.
 - Keep the Operator repository changes separate from website changes. No merge or deployment is part of implementation.
-- For future releases, merge the Website authoring PR first, then record its
-  merge commit and chart version in the Operator release commit. The generated
+- For future releases, merge the Website authoring PR first, then review and merge
+  the generated Operator metadata PR before tagging. The generated
   snapshot PR continues using `docs/operator-release/<tag>`.
 
 ## Task 1 — Baseline, repository instructions, and planning artifacts
@@ -190,12 +166,12 @@ after successful chart publication. Website changes:
 and focused tests.
 
 - The docs author opens a normal Website PR to `krkn-chaos/website:main`. After
-  it merges, the release maintainer records its full merge SHA and the matching
-  chart version in `docs/website-release.yaml` on the Operator release commit.
-- Release workflows reject prerelease tags and stable tags with missing or
-  mismatched metadata. Metadata is committed before the release tag is
+  it merges, the Website Action opens an Operator metadata PR recording its full
+  merge SHA and matching chart version against `release-MAJOR.MINOR`.
+- The receiver rejects prerelease tags and stable tags with missing or
+  mismatched metadata. Merge the metadata PR before the release tag is
   created; automation never rewrites an existing tag.
-- The chart workflow sends one `operator-docs-release-ready` notification
+- The default-branch chart-completion listener sends `operator-docs-release-ready`
   after publication succeeds. The Website receiver independently verifies
   the published release, tag metadata, pinned Website commit, and chart before
   capture. The notification payload supplies only the tag.
@@ -225,7 +201,7 @@ Create `docs/operator-docs-versioning.md`; update Hugo build and link-check work
 
 - Add unit, automation, integrity, and isolated generated-site checks. Use synthetic releases only in fixtures.
 - Verify selector scoping, sidebar isolation, missing-article fallback, link/fragment behavior, exact redirects, API rule preservation, no authoring leakage, immutable content/data/media, installation pinning, browser/chatbot search policy, provenance, print traversal, preview baseURL, and no-JavaScript switching.
-- Document the Website source PR, manually pinned release metadata, automated
+- Document the Website source PR, automatically generated metadata PRs, automated
   post-publication notification, generated snapshot PR, stable-only boundary,
   pinned Website commits, chart validation, retry, correction, rollback,
   local authoring preview, and dependency-extension rules.

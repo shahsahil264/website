@@ -50,6 +50,7 @@ scripts/*
 !scripts/finalize-operator-docs.js
 !scripts/check-operator-docs.js
 !scripts/operator-docs-release-pr.js
+!scripts/operator-docs-metadata-pr.js
 !scripts/lib/
 !scripts/lib/**
 !scripts/tests/

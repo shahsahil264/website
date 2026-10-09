@@ -9,6 +9,14 @@ on:
         description: Published Operator tag to capture
         required: true
         type: string
+      bootstrap_website_commit:
+        description: Initial adoption only - reviewed Website commit for a tag without metadata
+        required: false
+        type: string
+      bootstrap_chart_version:
+        description: Initial adoption only - published chart version (requires the Website commit)
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -59,7 +67,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
           OPERATOR_TAG: ${{ github.event.client_payload.operator_tag || inputs.operator_tag }}
+          BOOTSTRAP_WEBSITE_COMMIT: ${{ inputs.bootstrap_website_commit }}
+          BOOTSTRAP_CHART_VERSION: ${{ inputs.bootstrap_chart_version }}
           HUGO_CACHEDIR: /tmp/hugo-cache
         run: |
           set -euo pipefail
-          node scripts/operator-docs-release-pr.js --tag "$OPERATOR_TAG"
+          args=(--tag "$OPERATOR_TAG")
+          if [[ -n "$BOOTSTRAP_WEBSITE_COMMIT" || -n "$BOOTSTRAP_CHART_VERSION" ]]; then
+            args+=(--bootstrap-website-commit "$BOOTSTRAP_WEBSITE_COMMIT" --bootstrap-chart-version "$BOOTSTRAP_CHART_VERSION")
+          fi
+          node scripts/operator-docs-release-pr.js "${args[@]}"
