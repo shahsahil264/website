@@ -896,6 +896,7 @@ function validateSnapshotRecord(repoRoot, release) {
     }
     for (const removedPath of removedPaths) {
       const sourcePath = sourcePathForRemovedSnapshotOutput(removedPath, release.tag);
+      const sourceHash = sourcePath && sourceHashes[sourcePath];
       if (
         !sourcePath ||
         !Object.hasOwn(sourceHashes, sourcePath) ||
@@ -903,6 +904,22 @@ function validateSnapshotRecord(repoRoot, release) {
         expected.includes(removedPath)
       ) {
         throw new Error(`correction removed path has no matching source provenance for ${release.tag}`);
+      }
+      let pinnedSourceBytes;
+      try {
+        pinnedSourceBytes = runGit(repoRoot, [
+          'show',
+          `${record.website_commit}:${sourcePath}`,
+        ]);
+      } catch (_) {
+        throw new Error(
+          `correction removed path source is missing from pinned website commit for ${release.tag}: ${sourcePath}`
+        );
+      }
+      if (sha256(pinnedSourceBytes) !== sourceHash) {
+        throw new Error(
+          `correction removed path source hash does not match pinned website commit for ${release.tag}: ${sourcePath}`
+        );
       }
       const removedAbsolutePath = ensureSafeDestination(repoRoot, removedPath);
       if (fs.existsSync(removedAbsolutePath)) {
