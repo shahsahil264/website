@@ -41,7 +41,6 @@ Full access to the platform. Administrators configure the infrastructure that us
 - Create **groups** with cluster access and permissions
 - Create **users** and assign them to groups
 - Configure **private registries** and their visibility
-- Configure **cloud credentials** and their visibility
 - Configure **target providers** (e.g. ACM integration)
 - All operational features available to users
 
@@ -54,7 +53,6 @@ Operational access scoped by group membership. Every user must belong to a group
 - **Run scenarios** on assigned clusters (requires Run permission)
 - Design workflows in **Chaos Studio** (requires Run permission)
 - Upload and manage **files** (scoped by group visibility)
-- Select **cloud credentials** available to their group when running cloud scenarios
 
 {{% notice info %}}
 Users only see jobs from their own group. A cluster-wide indicator shows the names of running scenarios across all groups, but no details.
@@ -116,7 +114,6 @@ Allows users to cancel running scenarios and to remove scenario runs and their e
 | Cluster Management | Register and manage target Kubernetes clusters |
 | User & Group Management | Organize users through groups with granular permissions |
 | Private Registries | Configure private container registries with group-based visibility |
-| Cloud Credentials | Save cloud provider credentials and inject them into scenario pods via SecretKeyRef |
 | Chaos Studio | Design reusable visual workflows with serial and parallel execution |
 | Multi-cluster Execution | Run experiments on one or more clusters simultaneously |
 | Resiliency Score | Measure application resilience using PromQL-based metrics |
