@@ -48,18 +48,38 @@ function createGithubClient({
         await sleep(retryDelayMs * attempt);
         continue;
       }
-      if (response.status === 404) return null;
+      if (response.status === 404) {
+        if (method === 'GET') return null;
+        const error = new Error(`GitHub API 404 for ${method} ${endpoint}`);
+        error.status = 404;
+        error.retryable = false;
+        throw error;
+      }
       if (response.status === 204) return null;
       if (!response.ok) {
         const detail = await response.text().catch(() => '');
-        const error = new Error(`GitHub API ${response.status} for ${endpoint}: ${detail.slice(0, 300)}`);
+        const error = new Error(
+          `GitHub API ${response.status} for ${method} ${endpoint}: ${detail.slice(0, 300)}`
+        );
         error.status = response.status;
         error.retryable = response.status === 408 || response.status === 429 || response.status >= 500;
         if (!error.retryable || attempt === maxAttempts) throw error;
         await sleep(retryDelayMs * attempt);
         continue;
       }
-      return response.json();
+      try {
+        return await response.json();
+      } catch (cause) {
+        const error = new Error(
+          `GitHub API ${method} ${endpoint} response body could not be read: ${cause.message}`,
+          { cause }
+        );
+        error.retryable = true;
+        // A PR create may have succeeded even though its response body was lost.
+        // Let openOrUpdatePullRequest reconcile by deterministic branch before retrying.
+        if (method === 'POST' || attempt === maxAttempts) throw error;
+        await sleep(retryDelayMs * attempt);
+      }
     }
     throw new Error(`GitHub API request failed for ${endpoint}`);
   }
