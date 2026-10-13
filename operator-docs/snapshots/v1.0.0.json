@@ -51,7 +51,7 @@
     "data/roadmap.yaml": "17e8074a8c2df62ba71f9cb347b804826e21490d1af6bddc81ce54a45169df9c"
   },
   "output_hashes": {
-    "content/en/docs/krkn-operator/versions/v1.0.0/_index.md": "670674d552b2b416ca95b67754deec7d16d5a6f8c8eaaff004e62eb5a2dd5919",
+    "content/en/docs/krkn-operator/versions/v1.0.0/_index.md": "170beaca78605c898099ac4685219ae33ce2f8c5cd6a64fd2967093362238a3d",
     "content/en/docs/krkn-operator/versions/v1.0.0/administration/_index.md": "7db24cd8f054d45629bb7de79cc4ffaed38dd64dd6173648d0ed584c7374ff0e",
     "content/en/docs/krkn-operator/versions/v1.0.0/administration/cluster-management.md": "84e48bec124fe5f85d693cddf1013e4207af75bd965d62658ffd3e58955b3d5e",
     "content/en/docs/krkn-operator/versions/v1.0.0/administration/elasticsearch-management.md": "6368225a5843af927553e693ce9bc3cba32f1f2bf597f894f13d8701ad624a3c",
@@ -170,6 +170,13 @@
       "reason": "Remove the unreferenced cloud-credentials walkthrough video from the v1.0.0 archive; it documents functionality introduced after v1.0.0.",
       "removed_paths": [
         "static/operator-docs/v1.0.0/videos/cloud-credentials.mp4"
+      ]
+    },
+    {
+      "corrected_at": "2026-10-13T20:04:12Z",
+      "reason": "Remove remaining v1.0 overview claims that users can access cloud credentials or configure credentials in Administration; this feature is not documented for v1.0.0.",
+      "affected_paths": [
+        "content/en/docs/krkn-operator/versions/v1.0.0/_index.md"
       ]
     }
   ]

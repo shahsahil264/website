@@ -46,7 +46,7 @@ Full access to the platform. Administrators configure the infrastructure that us
 
 ### User
 
-Operational access scoped by group membership. Every user must belong to a group — the group determines which clusters, registries, credentials and features are accessible.
+Operational access scoped by group membership. Every user must belong to a group — the group determines which clusters, registries and features are accessible.
 
 - View and manage **jobs** (based on View/Cancel permissions)
 - Use the **cluster terminal** (requires Run permission)
@@ -138,6 +138,6 @@ See the [Compatibility Matrix](compatibility/) for tested ACM/OCM versions and p
 ## Next Steps
 
 - [Installation](installation/) — Deploy Krkn Operator with Helm
-- [Administration](administration/) — Configure clusters, users, registries, credentials and providers
+- [Administration](administration/) — Configure clusters, users, registries and providers
 - [Usage](usage/) — Run scenarios, use Chaos Studio, manage jobs
 - [Compatibility Matrix](compatibility/) — Supported platforms and ACM/OCM versions
