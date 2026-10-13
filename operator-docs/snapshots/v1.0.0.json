@@ -84,7 +84,6 @@
     "static/operator-docs/v1.0.0/images/krkn-operator/select-scenario.png": "5c6ff87d503ce4a8959f787b252ead3965c1ebc0d3416924cea9dce4453d4bb7",
     "static/operator-docs/v1.0.0/images/krkn-operator/select-target.png": "ec84a9ebf044fca3a5011ca50dee8cecd5d1e65c6316ead498ead271ebd820ff",
     "static/operator-docs/v1.0.0/images/krkn-operator/targets.png": "fedfab5c0c7479fe772ebacdebbafffaef428e5e0e40a2f8935826dc79744ee0",
-    "static/operator-docs/v1.0.0/videos/cloud-credentials.mp4": "4e88a7d53e4a410ef4a7eac4651559051fc53cb26834835f928d91c8aa96a67c",
     "static/operator-docs/v1.0.0/videos/elasticsearch.mp4": "f2972995bf35d75bc88d31ac5aeaa21865573b50ff378ad39982a1733a5c40b1",
     "static/operator-docs/v1.0.0/videos/workflow.mp4": "87a52746a99a40a894a0556160392e219f3878e2c8df07a63b790865f34b270b",
     "data/operator_docs/releases/v1.0.0/roadmap.yaml": "8a92413287f5917fbb247c9722121b52108140d3248fee7140701d6966523905"
@@ -124,7 +123,6 @@
     "static/operator-docs/v1.0.0/images/krkn-operator/select-scenario.png",
     "static/operator-docs/v1.0.0/images/krkn-operator/select-target.png",
     "static/operator-docs/v1.0.0/images/krkn-operator/targets.png",
-    "static/operator-docs/v1.0.0/videos/cloud-credentials.mp4",
     "static/operator-docs/v1.0.0/videos/elasticsearch.mp4",
     "static/operator-docs/v1.0.0/videos/workflow.mp4"
   ],
@@ -144,12 +142,16 @@
   "corrections": [
     {
       "corrected_at": "2026-10-13T16:10:03Z",
-      "reason": "Remove the deprecated backup/restore and cloud-credential management pages and their versioned navigation references.",
+      "reason": "Remove backup/restore and cloud-credential management pages and their versioned navigation references because they were mistakenly included in the v1.0.0 snapshot from post-v1.0 content.",
       "affected_paths": [
         "content/en/docs/krkn-operator/versions/v1.0.0/administration/_index.md",
         "content/en/docs/krkn-operator/versions/v1.0.0/usage/_index.md",
         "content/en/docs/krkn-operator/versions/v1.0.0/usage/chaos-studio.md",
         "content/en/docs/krkn-operator/versions/v1.0.0/usage/run-scenarios.md"
+      ],
+      "removed_paths": [
+        "content/en/docs/krkn-operator/versions/v1.0.0/administration/backup-restore.md",
+        "content/en/docs/krkn-operator/versions/v1.0.0/administration/cloud-credentials-management.md"
       ]
     },
     {
@@ -161,6 +163,13 @@
         "content/en/docs/krkn-operator/versions/v1.0.0/usage/_index.md",
         "content/en/docs/krkn-operator/versions/v1.0.0/usage/chaos-studio.md",
         "content/en/docs/krkn-operator/versions/v1.0.0/usage/run-scenarios.md"
+      ]
+    },
+    {
+      "corrected_at": "2026-10-13T19:47:48Z",
+      "reason": "Remove the unreferenced cloud-credentials walkthrough video from the v1.0.0 archive; it documents functionality introduced after v1.0.0.",
+      "removed_paths": [
+        "static/operator-docs/v1.0.0/videos/cloud-credentials.mp4"
       ]
     }
   ]
