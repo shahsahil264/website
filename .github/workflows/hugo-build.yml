@@ -25,6 +25,8 @@ jobs:
         with:
           node-version: "20"
       - run: npm install
+      - name: Test stable Operator version lookup
+        run: npm run test:krkn-operator-version
       - name: Check Operator documentation integrity
         run: npm run check:operator-docs
       - name: Test Operator documentation helpers
