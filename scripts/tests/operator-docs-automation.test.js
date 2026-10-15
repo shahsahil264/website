@@ -8,7 +8,6 @@ const path = require('node:path');
 const test = require('node:test');
 const YAML = require('yaml');
 const {
-  assertBootstrapInputsAllowed,
   assertSameReleaseProvenance,
   buildPullRequestBody,
   isBeforeAdoptionBoundary,
@@ -18,6 +17,7 @@ const {
   stageSnapshotChanges,
   releaseBranchName,
   sameReleaseProvenance,
+  selectRegisteredRelease,
   selectExistingPullRequest,
   shouldIgnoreReleaseAtAdoptionBoundary,
 } = require('../lib/operator-docs-automation');
@@ -42,20 +42,16 @@ test('release preparation queues every release instead of replacing pending runs
   assert.equal(workflow.concurrency['cancel-in-progress'], false);
 });
 
-test('manual bootstrap workflow accepts and forwards the pinned website commit and chart version', () => {
+test('manual workflow retry only accepts a release tag and resolves all provenance automatically', () => {
   const workflowPath = path.join(__dirname, '../../.github/workflows/operator-docs-release.yml');
   const workflow = YAML.parse(fs.readFileSync(workflowPath, 'utf8'));
   const inputs = workflow.on.workflow_dispatch.inputs;
   const prepare = workflow.jobs.prepare.steps.find((step) => step.name === 'Resolve release inputs, validate, and prepare PR');
 
-  assert.ok(inputs.bootstrap_website_commit, 'manual workflow must expose the pinned Website commit');
-  assert.ok(inputs.bootstrap_chart_version, 'manual workflow must expose the chart version');
-  assert.equal(inputs.bootstrap_website_commit.required, false);
-  assert.equal(inputs.bootstrap_chart_version.required, false);
-  assert.match(prepare.env.BOOTSTRAP_WEBSITE_COMMIT, /inputs\.bootstrap_website_commit/);
-  assert.match(prepare.env.BOOTSTRAP_CHART_VERSION, /inputs\.bootstrap_chart_version/);
-  assert.match(prepare.run, /--bootstrap-website-commit/);
-  assert.match(prepare.run, /--bootstrap-chart-version/);
+  assert.deepEqual(Object.keys(inputs), ['operator_tag']);
+  assert.match(prepare.env.OPERATOR_TAG, /inputs\.operator_tag/);
+  assert.doesNotMatch(prepare.run, /bootstrap/i);
+  assert.equal(fs.existsSync(path.join(__dirname, '../../.github/workflows/operator-docs-source-merged.yml')), false);
 });
 
 test('duplicate notifications compare equal only when complete release provenance matches', () => {
@@ -64,6 +60,23 @@ test('duplicate notifications compare equal only when complete release provenanc
   assert.doesNotThrow(() => assertSameReleaseProvenance(release, { ...release }));
   assert.throws(
     () => assertSameReleaseProvenance(release, { ...release, operator_commit: 'd'.repeat(40) }),
+    /different provenance/
+  );
+});
+
+test('a pending snapshot branch preserves its Website pin across duplicate retries', () => {
+  const pinned = { ...release, tag: 'v1.2.0' };
+  const mainRegistry = { schema_version: 1, releases: [] };
+  const pendingRegistry = { schema_version: 1, releases: [pinned] };
+
+  assert.deepEqual(
+    selectRegisteredRelease('v1.2.0', mainRegistry, pendingRegistry),
+    pinned
+  );
+  assert.throws(
+    () => selectRegisteredRelease('v1.2.0', {
+      releases: [{ ...pinned, website_commit: 'c'.repeat(40) }],
+    }, pendingRegistry),
     /different provenance/
   );
 });
@@ -114,32 +127,11 @@ test('an already registered baseline before the cutoff remains an idempotent cap
   );
 });
 
-test('bootstrap inputs stop after adoption except for an identical retry of the registered bootstrap', () => {
-  const bootstrapInputs = {
-    website_commit: release.website_commit,
-    helm_chart_version: release.helm_chart_version,
-  };
-  assert.doesNotThrow(() => assertBootstrapInputsAllowed({ releases: [] }, release.tag, bootstrapInputs));
-
-  const adoptedRegistry = {
-    adoption_boundary_published_at: release.published_at,
-    releases: [{ ...release }],
-  };
-  assert.doesNotThrow(() => assertBootstrapInputsAllowed(adoptedRegistry, release.tag, bootstrapInputs));
-  assert.throws(
-    () => assertBootstrapInputsAllowed(adoptedRegistry, 'v1.2.0', bootstrapInputs),
-    /bootstrap inputs are only accepted before the adoption boundary/i
-  );
-  assert.throws(
-    () => assertBootstrapInputsAllowed(adoptedRegistry, release.tag, {
-      ...bootstrapInputs,
-      website_commit: 'c'.repeat(40),
-    }),
-    /do not match the registered bootstrap/i
-  );
+test('the first verified release can establish the adoption boundary without manual metadata', () => {
+  assert.equal(shouldIgnoreReleaseAtAdoptionBoundary({ schema_version: 1, releases: [] }, release), false);
 });
 
-test('bootstrap can register the first release after the adoption cutoff but cannot introduce another release', () => {
+test('a post-cutoff stable release is eligible while earlier unregistered releases are ignored', () => {
   const registry = {
     adoption_boundary_published_at: release.published_at,
     releases: [{
@@ -155,30 +147,12 @@ test('bootstrap can register the first release after the adoption cutoff but can
     published_at: '2026-10-09T17:19:38Z',
   };
 
-  assert.equal(shouldIgnoreReleaseAtAdoptionBoundary(registry, laterRelease, {
-    website_commit: 'c'.repeat(40),
-    helm_chart_version: '1.1.0',
-  }), false);
-
-  const registeredBootstrap = {
+  assert.equal(shouldIgnoreReleaseAtAdoptionBoundary(registry, laterRelease), false);
+  assert.equal(shouldIgnoreReleaseAtAdoptionBoundary(registry, {
     ...laterRelease,
-    website_commit: 'c'.repeat(40),
-    helm_chart_version: '1.1.0',
-  };
-  assert.throws(
-    () => shouldIgnoreReleaseAtAdoptionBoundary({
-      ...registry,
-      releases: [...registry.releases, registeredBootstrap],
-    }, {
-      ...laterRelease,
-      tag: 'v1.2.0',
-      published_at: '2026-11-09T00:00:00Z',
-    }, {
-      website_commit: 'c'.repeat(40),
-      helm_chart_version: '1.2.0',
-    }),
-    /bootstrap inputs are only accepted before the adoption boundary/i
-  );
+    tag: 'v1.0.5',
+    published_at: '2026-09-01T00:00:00Z',
+  }), true);
 });
 
 test('merging a refreshed main branch has bot identity configured before a merge commit is created', () => {

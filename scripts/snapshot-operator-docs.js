@@ -19,32 +19,20 @@ function parseArgs(argv) {
     if (argument === '--dry-run') options.dryRun = true;
     else if (argument === '--tag') options.tag = argv[++index];
     else if (argument === '--repo-root') options.repoRoot = path.resolve(argv[++index]);
-    else if (argument === '--bootstrap-website-commit') options.websiteCommit = argv[++index];
-    else if (argument === '--bootstrap-chart-version') options.chartVersion = argv[++index];
     else throw new Error(`unknown argument: ${argument}`);
   }
   if (!options.tag) throw new Error('usage: snapshot-operator-docs.js --tag <published-tag> [--dry-run]');
-  if (Boolean(options.websiteCommit) !== Boolean(options.chartVersion)) {
-    throw new Error('bootstrap requires both --bootstrap-website-commit and --bootstrap-chart-version');
-  }
   return options;
 }
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   const githubClient = createGithubClient({ token: process.env.GITHUB_TOKEN });
-  const bootstrapInputs = options.websiteCommit
-    ? {
-        website_commit: options.websiteCommit,
-        helm_chart_version: options.chartVersion,
-      }
-    : undefined;
   const releaseInputs = await resolveReleaseInputsWithRetry({
     githubClient,
     operatorTag: options.tag,
-    bootstrapInputs,
   });
-  if (!shouldCaptureRelease(options.repoRoot, releaseInputs, bootstrapInputs)) {
+  if (!shouldCaptureRelease(options.repoRoot, releaseInputs)) {
     console.log(`Ignoring ${releaseInputs.tag}; it predates the documentation adoption boundary.`);
     return;
   }
@@ -78,11 +66,10 @@ async function main() {
   console.log(`Snapshot ${result.status}: ${releaseInputs.tag}`);
 }
 
-function shouldCaptureRelease(repoRoot, releaseInputs, bootstrapInputs) {
+function shouldCaptureRelease(repoRoot, releaseInputs) {
   return !shouldIgnoreReleaseAtAdoptionBoundary(
     readRegistry(repoRoot),
-    releaseInputs,
-    bootstrapInputs
+    releaseInputs
   );
 }
 

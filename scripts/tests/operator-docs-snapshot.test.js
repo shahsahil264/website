@@ -224,7 +224,7 @@ test('rejects uncaptured installation scripts after removing the known live vers
   );
 });
 
-test('standalone snapshot capture rejects bootstrap overrides for a new tag after adoption', () => {
+test('standalone snapshot capture uses the verified Website release pin and adoption boundary', () => {
   const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'operator-docs-adoption-'));
   const adoptionBoundary = '2026-10-08T10:23:14Z';
   const registeredBootstrap = {
@@ -249,18 +249,18 @@ test('standalone snapshot capture rejects bootstrap overrides for a new tag afte
   );
 
   try {
-    assert.throws(
-      () => shouldCaptureRelease(repoRoot, {
-        ...releaseInputs,
-        tag: 'v1.2.1',
-        published_at: '2026-10-09T00:00:00Z',
-        helm_chart_version: '1.2.1',
-      }, {
-        website_commit: 'c'.repeat(40),
-        helm_chart_version: '1.2.1',
-      }),
-      /bootstrap inputs are only accepted before the adoption boundary/i
-    );
+    assert.equal(shouldCaptureRelease(repoRoot, {
+      ...releaseInputs,
+      tag: 'v1.2.1',
+      published_at: '2026-10-09T00:00:00Z',
+      helm_chart_version: '1.2.1',
+    }), true);
+    assert.equal(shouldCaptureRelease(repoRoot, {
+      ...releaseInputs,
+      tag: 'v1.0.5',
+      published_at: '2026-09-01T00:00:00Z',
+      helm_chart_version: '1.0.5',
+    }), false);
   } finally {
     fs.rmSync(repoRoot, { recursive: true, force: true });
   }

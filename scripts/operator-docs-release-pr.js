@@ -18,6 +18,7 @@ const {
   prepareReleaseBranch,
   releaseBranchName,
   selectExistingPullRequest,
+  selectRegisteredRelease,
   stageSnapshotChanges,
   shouldIgnoreReleaseAtAdoptionBoundary,
 } = require('./lib/operator-docs-automation');
@@ -31,14 +32,9 @@ function parseArgs(argv) {
     const argument = argv[index];
     if (argument === '--tag') options.tag = argv[++index];
     else if (argument === '--repo-root') options.repoRoot = path.resolve(argv[++index]);
-    else if (argument === '--bootstrap-website-commit') options.websiteCommit = argv[++index];
-    else if (argument === '--bootstrap-chart-version') options.chartVersion = argv[++index];
     else throw new Error(`unknown argument: ${argument}`);
   }
   if (!options.tag) throw new Error('usage: operator-docs-release-pr.js --tag <published-tag>');
-  if (Boolean(options.websiteCommit) !== Boolean(options.chartVersion)) {
-    throw new Error('bootstrap requires both --bootstrap-website-commit and --bootstrap-chart-version');
-  }
   return options;
 }
 
@@ -108,43 +104,60 @@ async function main() {
   if (!token) throw new Error('GITHUB_TOKEN is required for release input verification and PR creation');
   if (!fs.existsSync(path.join(repoRoot, '.git'))) throw new Error(`not a Git checkout: ${repoRoot}`);
 
-  const bootstrapInputs = options.websiteCommit
-    ? { website_commit: options.websiteCommit, helm_chart_version: options.chartVersion }
-    : undefined;
+  const initialRegistry = readRegistry(repoRoot);
+  const mainRegisteredRelease = initialRegistry.releases.find((entry) => entry.tag === options.tag);
   const githubClient = createGithubClient({ token });
+  const branch = releaseBranchName(options.tag);
+  const pullRequests = await listPullRequests(githubClient, branch);
+  const existingPull = selectExistingPullRequest(pullRequests, branch);
+  if (existingPull?.merged_at && !mainRegisteredRelease) {
+    throw new Error(`PR ${existingPull.number} is merged but its release registry entry is not on main yet`);
+  }
+
+  let hasRemoteBranch = false;
+  let branchPrepared = false;
+  let pendingRegistry = null;
+  if (existingPull && !existingPull.merged_at) {
+    hasRemoteBranch = prepareReleaseBranch(repoRoot, branch, git, remoteBranchExists);
+    branchPrepared = true;
+    assertTrustedReleaseBranch(repoRoot, options.tag, git);
+    pendingRegistry = readRegistry(repoRoot);
+  }
+
+  const registeredRelease = selectRegisteredRelease(
+    options.tag,
+    initialRegistry,
+    pendingRegistry
+  );
   const releaseInputs = await resolveReleaseInputsWithRetry({
     githubClient,
     operatorTag: options.tag,
-    bootstrapInputs,
+    ...(registeredRelease ? { websiteCommit: registeredRelease.website_commit } : {}),
   });
-  const initialRegistry = readRegistry(repoRoot);
-  if (shouldIgnoreReleaseAtAdoptionBoundary(initialRegistry, releaseInputs, bootstrapInputs)) {
+  if (shouldIgnoreReleaseAtAdoptionBoundary(initialRegistry, releaseInputs)) {
     console.log(`Ignoring ${releaseInputs.tag}; it predates the documentation adoption boundary.`);
     return;
   }
 
-  const branch = releaseBranchName(releaseInputs.tag);
-  const pullRequests = await listPullRequests(githubClient, branch);
-  const existingPull = selectExistingPullRequest(pullRequests, branch);
-  const registeredOnBase = initialRegistry.releases.find((entry) => entry.tag === releaseInputs.tag);
-  if (existingPull?.merged_at && !registeredOnBase) {
-    throw new Error(`PR ${existingPull.number} is merged but its release registry entry is not on main yet`);
-  }
-  if (registeredOnBase) {
-    assertSameReleaseProvenance(registeredOnBase, releaseInputs);
-    validateSnapshots(repoRoot, initialRegistry);
-    if (!existingPull || existingPull.merged_at) {
+  if (registeredRelease) {
+    assertSameReleaseProvenance(registeredRelease, releaseInputs);
+    if (mainRegisteredRelease) {
+      validateSnapshots(repoRoot, initialRegistry);
+    }
+    if (mainRegisteredRelease && (!existingPull || existingPull.merged_at)) {
       console.log(`Release ${releaseInputs.tag} is already captured on main with matching provenance.`);
       return;
     }
   }
 
-  const hasRemoteBranch = prepareReleaseBranch(repoRoot, branch, git, remoteBranchExists);
+  if (!branchPrepared) {
+    hasRemoteBranch = prepareReleaseBranch(repoRoot, branch, git, remoteBranchExists);
+  }
 
   assertTrustedReleaseBranch(repoRoot, releaseInputs.tag, git);
   const branchRegistry = readRegistry(repoRoot);
   const adoptionBoundary = branchRegistry.adoption_boundary_published_at;
-  if (shouldIgnoreReleaseAtAdoptionBoundary(branchRegistry, releaseInputs, bootstrapInputs)) {
+  if (shouldIgnoreReleaseAtAdoptionBoundary(branchRegistry, releaseInputs)) {
     console.log(`Ignoring ${releaseInputs.tag}; it predates the documentation adoption boundary.`);
     return;
   }

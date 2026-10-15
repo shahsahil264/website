@@ -31,17 +31,6 @@ function clientWith(overrides = {}) {
       calls.push(['tag', owner, repository, tag]);
       return operatorCommit;
     },
-    async getFileAtCommit(owner, repository, commit, filePath) {
-      calls.push(['file', owner, repository, commit, filePath]);
-      return [
-        'schema_version: 1',
-        'releases:',
-        '  - operator_tag: v1.4.0',
-        `    website_commit: ${websiteCommit}`,
-        '    helm_chart_version: 1.4.0',
-        '',
-      ].join('\n');
-    },
     async getCommit(owner, repository, commit) {
       calls.push(['commit', owner, repository, commit]);
       return { sha: commit };
@@ -66,30 +55,47 @@ function clientWith(overrides = {}) {
   return { client: { ...client, ...overrides }, calls };
 }
 
-test('resolves a stable release from exact release metadata and pinned published chart', async () => {
+test('pins docs to Website main automatically when resolving the stable Operator release', async () => {
   const { client, calls } = clientWith();
   const result = await resolveReleaseInputs({
     githubClient: client,
     operatorTag: 'v1.4.0',
   });
+
   assert.deepEqual(result, {
     tag: 'v1.4.0',
     github_release_id: 120,
     published_at: '2026-10-01T00:00:00Z',
     operator_commit: operatorCommit,
-    website_commit: websiteCommit,
+    website_commit: websiteHead,
     helm_chart_version: '1.4.0',
     chart_reference: chartReference,
   });
-  assert.ok(calls.some((call) => call[0] === 'release' && call[3] === 'v1.4.0'));
-  assert.ok(calls.some((call) => call[0] === 'file' && call[4] === 'docs/website-release.yaml'));
+  assert.ok(calls.some((call) => call[0] === 'head' && call[1] === 'krkn-chaos' && call[2] === 'website'));
+  assert.ok(calls.some((call) => call[0] === 'commit' && call[3] === websiteHead));
   assert.ok(calls.some((call) => call[0] === 'chart' && call[1] === chartReference && call[2] === '1.4.0'));
-  assert.equal(calls.some((call) => call[0] === 'latest'), false);
+});
+
+test('uses an existing registry pin on duplicate release notifications', async () => {
+  const compares = [];
+  const { client } = clientWith({
+    getCommit: async (_owner, _repository, commit) => ({ sha: commit }),
+    compareCommits: async (_owner, _repository, base, head) => {
+      compares.push([base, head]);
+      return { status: 'ahead' };
+    },
+  });
+  const result = await resolveReleaseInputs({
+    githubClient: client,
+    operatorTag: 'v1.4.0',
+    websiteCommit,
+  });
+  assert.equal(result.website_commit, websiteCommit);
+  assert.deepEqual(compares, [[websiteCommit, websiteHead]]);
 });
 
 test('rejects an RC tag even when GitHub mislabels it as a stable release', async () => {
   const { client, calls } = clientWith();
-
   await assert.rejects(
     resolveReleaseInputs({ githubClient: client, operatorTag: 'v1.1.0-rc7' }),
     /stable Operator release tag/i
@@ -107,109 +113,9 @@ test('rejects a stable-shaped tag when GitHub marks its release as prerelease', 
       published_at: '2026-10-01T00:00:00Z',
     }),
   });
-
   await assert.rejects(
     resolveReleaseInputs({ githubClient: client, operatorTag: 'v1.4.0' }),
     /GitHub marks .* as a prerelease/i
-  );
-});
-
-test('selects the matching tag when one Operator branch has several release mappings', async () => {
-  const otherWebsiteCommit = 'd'.repeat(40);
-  const source = [
-    'schema_version: 1',
-    'releases:',
-    '  - operator_tag: v1.4.0',
-    `    website_commit: ${otherWebsiteCommit}`,
-    '    helm_chart_version: 1.4.0',
-    '  - operator_tag: v1.4.1',
-    `    website_commit: ${websiteCommit}`,
-    '    helm_chart_version: 1.4.1',
-  ].join('\n');
-  const { client } = clientWith({
-    getFileAtCommit: async () => source,
-    getPublishedChart: async (_reference, version) => ({
-      name: 'krkn-operator',
-      version,
-      appVersion: 'v1.4.0',
-    }),
-  });
-
-  const result = await resolveReleaseInputs({
-    githubClient: client,
-    operatorTag: 'v1.4.0',
-  });
-
-  assert.equal(result.website_commit, otherWebsiteCommit);
-  assert.equal(result.helm_chart_version, '1.4.0');
-});
-
-test('rejects a release metadata file that has no record for the requested tag', async () => {
-  const { client } = clientWith({
-    getFileAtCommit: async () => [
-      'schema_version: 1',
-      'releases:',
-      '  - operator_tag: v1.3.0',
-      `    website_commit: ${websiteCommit}`,
-      '    helm_chart_version: 1.3.0',
-    ].join('\n'),
-  });
-
-  await assert.rejects(
-    resolveReleaseInputs({ githubClient: client, operatorTag: 'v1.4.0' }),
-    /does not contain.*v1\.4\.0/i
-  );
-});
-
-test('requires the release chart version to match the Operator tag rule', async () => {
-  const { client } = clientWith({
-    getFileAtCommit: async () => [
-      'schema_version: 1',
-      'releases:',
-      '  - operator_tag: v1.4.0',
-      `    website_commit: ${websiteCommit}`,
-      '    helm_chart_version: 1.4.2',
-    ].join('\n'),
-  });
-
-  await assert.rejects(
-    resolveReleaseInputs({ githubClient: client, operatorTag: 'v1.4.0' }),
-    /chart version.*1\.4\.0/i
-  );
-});
-
-test('rejects the legacy single-release metadata schema for a normal release', async () => {
-  const { client } = clientWith({
-    getFileAtCommit: async () => [
-      'schema_version: 1',
-      `website_commit: ${websiteCommit}`,
-      'helm_chart_version: 1.4.0',
-    ].join('\n'),
-  });
-
-  await assert.rejects(
-    resolveReleaseInputs({ githubClient: client, operatorTag: 'v1.4.0' }),
-    /must contain a tag-keyed releases list/i
-  );
-});
-
-test('rejects duplicate release tags in the metadata registry', async () => {
-  const { client } = clientWith({
-    getFileAtCommit: async () => [
-      'schema_version: 1',
-      'releases:',
-      '  - operator_tag: v1.4.0',
-      `    website_commit: ${websiteCommit}`,
-      '    helm_chart_version: 1.4.0',
-      '  - operator_tag: v1.4.0',
-      `    website_commit: ${websiteCommit}`,
-      '    helm_chart_version: 1.4.0',
-    ].join('\n'),
-  });
-
-  await assert.rejects(
-    resolveReleaseInputs({ githubClient: client, operatorTag: 'v1.4.0' }),
-    /duplicate.*operator tag/i
   );
 });
 
@@ -248,18 +154,8 @@ test('rejects a missing, draft, or mismatched release', async () => {
   );
 });
 
-test('rejects missing metadata, an unreviewed website commit, or mismatched chart metadata', async () => {
-  const missingMetadata = clientWith({
-    getFileAtCommit: async () => null,
-  }).client;
-  await assert.rejects(
-    resolveReleaseInputs({ githubClient: missingMetadata, operatorTag: 'v1.4.0' }),
-    /website-release\.yaml.*missing/i
-  );
-
-  const unrelated = clientWith({
-    compareCommits: async () => ({ status: 'diverged' }),
-  }).client;
+test('rejects a website source commit outside reviewed main history or a mismatched chart', async () => {
+  const unrelated = clientWith({ compareCommits: async () => ({ status: 'diverged' }) }).client;
   await assert.rejects(
     resolveReleaseInputs({ githubClient: unrelated, operatorTag: 'v1.4.0' }),
     /default-branch history/i
@@ -278,60 +174,10 @@ test('rejects missing metadata, an unreviewed website commit, or mismatched char
   );
 });
 
-test('allows explicit website and chart inputs only for a missing bootstrap tag file', async () => {
-  const { client } = clientWith({ getFileAtCommit: async () => null });
-  const result = await resolveReleaseInputs({
-    githubClient: client,
-    operatorTag: 'v1.4.0',
-    bootstrapInputs: {
-      website_commit: websiteCommit,
-      helm_chart_version: '1.4.0',
-    },
-  });
-  assert.equal(result.website_commit, websiteCommit);
-  assert.equal(result.helm_chart_version, '1.4.0');
-
-  const taggedMetadata = clientWith().client;
-  await assert.rejects(
-    resolveReleaseInputs({
-      githubClient: taggedMetadata,
-      operatorTag: 'v1.4.0',
-      bootstrapInputs: {
-        website_commit: 'd'.repeat(40),
-        helm_chart_version: '9.9.9',
-      },
-    }),
-    /bootstrap inputs do not match/i
-  );
-});
-
-test('accepts the legacy single-release schema only for explicit matching bootstrap inputs', async () => {
-  const source = [
-    'schema_version: 1',
-    `website_commit: ${websiteCommit}`,
-    'helm_chart_version: 1.4.0',
-  ].join('\n');
-  const { client } = clientWith({ getFileAtCommit: async () => source });
-  const result = await resolveReleaseInputs({
-    githubClient: client,
-    operatorTag: 'v1.4.0',
-    bootstrapInputs: {
-      website_commit: websiteCommit,
-      helm_chart_version: '1.4.0',
-    },
-  });
-  assert.equal(result.website_commit, websiteCommit);
-
-  await assert.rejects(
-    resolveReleaseInputs({ githubClient: client, operatorTag: 'v1.4.0' }),
-    /tag-keyed releases list/i
-  );
-});
-
 test('retries temporarily missing published releases within the configured window', async () => {
   let attempts = 0;
   const { client } = clientWith({
-    async getReleaseByTag(owner, repository, tag) {
+    async getReleaseByTag(_owner, _repository, tag) {
       attempts += 1;
       if (attempts === 1) return null;
       return {
@@ -360,14 +206,9 @@ test('retries a chart that is not visible immediately after release publication'
     async getPublishedChart(_reference, version) {
       chartAttempts += 1;
       if (chartAttempts === 1) return null;
-      return {
-        name: 'krkn-operator',
-        version,
-        appVersion: 'v1.4.0',
-      };
+      return { name: 'krkn-operator', version, appVersion: 'v1.4.0' };
     },
   });
-
   const result = await resolveReleaseInputsWithRetry({
     githubClient: client,
     operatorTag: 'v1.4.0',
@@ -375,7 +216,6 @@ test('retries a chart that is not visible immediately after release publication'
     retryIntervalMs: 1,
     sleep: async () => {},
   });
-
   assert.equal(result.helm_chart_version, '1.4.0');
   assert.equal(chartAttempts, 2);
 });
@@ -385,14 +225,9 @@ test('does not retry a published chart that maps to a different Operator tag', a
   const { client } = clientWith({
     async getPublishedChart(_reference, version) {
       chartAttempts += 1;
-      return {
-        name: 'krkn-operator',
-        version,
-        appVersion: 'v1.3.0',
-      };
+      return { name: 'krkn-operator', version, appVersion: 'v1.3.0' };
     },
   });
-
   await assert.rejects(
     resolveReleaseInputsWithRetry({
       githubClient: client,
