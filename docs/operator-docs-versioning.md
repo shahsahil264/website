@@ -1,117 +1,121 @@
 # Krkn Operator documentation releases
 
-Authors continue editing the Operator documentation under
-`content/en/docs/krkn-operator/`. The Website captures those pages from a
-release-pinned Website commit and publishes a frozen copy at
-`/docs/krkn-operator/versions/<operator-tag>/` after a stable Operator release.
-Versioned links stay on their release; existing unversioned links forward to
-the newest stable snapshot that has been reviewed and deployed.
+## Where authors edit and what readers see
 
-## What happens for each release
+Authors prepare the next release in the Website repository under
+`content/en/docs/krkn-operator/`. That tree is the editable source. In
+production builds with registered snapshots, Hugo excludes it from the public
+site and mounts the frozen release trees found under
+`content/en/docs/krkn-operator/versions/`. Navigation, browser search, chatbot
+search, and printed documentation use the published snapshots, not the moving
+authoring tree.
 
-1. **The docs author updates the Website source.** Open a normal pull request
-   to `krkn-chaos/website:main` from a branch named
-   `docs/operator-source/vMAJOR.MINOR.PATCH`. The branch identifies the release
-   for the merged-PR Action; prerelease suffixes are rejected. Edit files under
-   `content/en/docs/krkn-operator/`; do not edit generated files under
-   `versions/`. The source PR can add, remove, or rename pages and change
-   layouts, images, and videos. Keep `operator_docs_page_key` in front matter
-   when a renamed page should retain its previous identity.
-2. **A maintainer merges the docs PR.** The Website Action reads the merged PR
-   from GitHub, verifies its merge commit is in `main`, and creates an Operator
-   metadata PR against the existing `release-MAJOR.MINOR` branch. It records
-   the exact Website merge SHA and derives the chart version from the tag.
-3. **A maintainer reviews and merges the generated Operator metadata PR before
-   tagging the release.** The Action writes this tag-keyed mapping to
-   `docs/website-release.yaml`, preserving previous entries:
+The source files remain in GitHub so authors can update them. They are not
+published just because their Website PR is merged. The local command
+`npm run preview:operator-source` is explicitly labeled as an unpublished
+authoring preview.
 
-   ```yaml
-   schema_version: 1
-   releases:
-     - operator_tag: v1.1.0
-       website_commit: "<full Website merge commit SHA>"
-       helm_chart_version: "1.1.0"
-   ```
+Previously shared unversioned URLs keep working through generated redirect
+pages that send readers to the corresponding article in the newest published
+stable snapshot, or its overview if the article is unavailable. Those pages
+are compatibility redirects, not copies of the authoring sections. Versioned
+URLs stay pinned, for example:
 
-   The chart version is the Operator tag without its leading `v`. The release
-   receiver validates that the tag has a matching metadata entry. There is no
-   manual SHA or chart-version copying. The merged metadata becomes part of
-   the release commit, so the tag identifies its documentation source.
-4. **The release maintainer publishes the stable Operator tag and chart** using
-   the normal release process. Prerelease tags are not versioned. After chart
-   publication succeeds, the Operator workflow automatically notifies the
-   Website. A publication-completion notification also permits a retry if the
-   release and chart become visible at different times. Duplicate notices reuse
-   one snapshot PR. No one manually dispatches the normal release workflow.
-5. **The Website receiver verifies the release inputs** from the tag, checks
-   the pinned Website commit is in reviewed `main` history, and verifies the
-   published chart and its `appVersion`. It captures the Markdown, images,
-   roadmap data, and other supported dependencies from that exact Website
-   commit, then opens or updates a snapshot PR.
-6. **A Website reviewer checks and merges the snapshot PR.** Review its
-   preview, page inventory, provenance, install commands, links, media,
-   redirects, search, and print behavior. Auto-merge is disabled. Once the PR
-   deploys, that release becomes the default if it is the newest published
-   stable release.
+```text
+/docs/krkn-operator/versions/v1.0.0/usage/jobs/
+/docs/krkn-operator/versions/v1.1.0/usage/jobs/
+```
 
-The Website never infers the source commit from the current branch and never
-refreshes an old snapshot from moving authoring files. Duplicate notifications
-are safe. A missing or mismatched release, Website commit, or chart prevents a
-partial snapshot PR from being created.
+Only stable tags matching `vMAJOR.MINOR.PATCH` are captured. GitHub must also
+report that the release is not a prerelease; the tag check excludes RC tags
+even if GitHub mislabels them.
 
-## Stable-only rollout and current docs
+## Flow for a new release, such as v1.2.0
 
-Only tags matching `vMAJOR.MINOR.PATCH` with no suffix are eligible, and
-GitHub must report `prerelease: false`. Both checks are required because
-GitHub currently reports some `v1.1.0-rc*` tags as non-prereleases; their `-rc`
-suffix still excludes them.
+1. **Prepare the Website source.** For v1.2.0, authors edit the docs, media,
+   and page structure under `content/en/docs/krkn-operator/`. They can use any
+   branch names and merge as many normal Website PRs as needed to finish this
+   release. Those PRs do not need a special name or release label: the bot
+   reads the whole authoring tree from Website `main`. Do not create or change
+   `content/en/docs/krkn-operator/versions/v1.2.0/`; the bot generates that
+   folder. A renamed page can keep its previous selector identity by retaining
+   its `operator_docs_page_key` front matter.
+2. **Review and merge the source PRs.** Merging makes the authoring changes
+   available in Website Git history, but production still serves the already
+   published snapshots. The source is not shown to website readers.
+3. **Publish Operator v1.2.0 and its chart.** This is the normal Operator
+   release. Once the chart publication succeeds, the Operator workflow
+   automatically dispatches the release tag to the Website receiver. No one
+   supplies a Website SHA or chart version manually.
+4. **The Website bot resolves and validates the source.** It pins the current
+   Website `main` commit and uses that exact commit to read the authoring tree.
+   The SHA is recorded in the generated snapshot PR; no one supplies it
+   manually. The bot checks the stable Operator release and verifies the
+   published chart version and `appVersion`.
+5. **The Website bot opens a snapshot PR.** It captures the docs and supported
+   dependencies from that exact Website merge commit, writes the v1.2.0
+   snapshot and integrity record, and opens or updates one PR on
+   `docs/operator-release/v1.2.0`. It runs the integrity checks, tests, strict
+   link check, and production build before opening a ready-for-review PR.
+6. **Review and merge the snapshot PR.** A Website maintainer checks the
+   preview, pages, navigation, media, install commands, redirects, search, and
+   print output, then merges it. After deployment, v1.2.0 appears in the
+   selector. It becomes the default only if it is the newest published stable
+   release. Earlier snapshots and their URLs remain unchanged.
 
-The initial registry preserves the current `v1.0.0` documentation as a named,
-frozen snapshot. It is captured from Website commit
-`7c35229ddbec37d65ef6a9c53945443b6fa8bf6e`, the exact revision containing
-those pages. The adoption boundary is the publication time of stable
-`v1.0.10` (`2026-09-26T13:03:34Z`), so the automation will not reconstruct
-other releases published at or before that point. It will not label 1.1 source
-docs as 1.0 docs. Website PR #681 is the separate 1.1.0 authoring change.
-Because v1.1.0 is already published without metadata, its source-merge Action
-uses the reviewed merge commit as the one-time bootstrap input and verifies
-the existing release and published chart through the same receiver. It never
-rewrites the Operator tag. Bootstrap is closed once a release at or after the
-adoption cutoff is captured; identical retries of a registered release remain
-allowed. Its snapshot becomes the new default after the generated Website
-snapshot PR is merged. Until then, unversioned links
-resolve to the preserved v1.0.0 snapshot after the initial versioning PR is
-deployed. Prereleases never appear in the selector.
+The team works on one Operator documentation release at a time. After the bot
+captures v1.2.0, keep the authoring tree unchanged until the generated v1.2.0
+Website snapshot PR is reviewed and merged. Then start preparing the next
+release in the same authoring tree. The bot does not need to identify a
+particular source PR or handle two releases' authoring content at once. The
+human work is to prepare and review the source PRs, create the normal Operator
+release, and review the generated Website snapshot PR. There is no metadata PR
+in the Operator repository and no manual copying into a version directory.
 
-Among merged snapshots, the default is selected by publication time and then
-numeric GitHub release ID. An older release PR merged later cannot move the
-default backwards. The GitHub `latest` flag and alphabetical tag order are not
-used.
+## Existing and corrected versions
 
-## One-time setup and merge order
+The registry starts with the preserved v1.0.0 snapshot from Website commit
+`7c35229ddbec37d65ef6a9c53945443b6fa8bf6e`. Its adoption boundary is stable
+release v1.0.10, published at `2026-09-26T13:03:34Z`; unregistered releases at
+or before that time are not reconstructed. The newer v1.1 source docs are not
+relabelled as v1.0. If the source PRs and stable release already exist, the
+tag-only workflow can be rerun to prepare its snapshot without changing the
+Operator tag.
 
-The automation becomes active after the Website receiver and Operator release
-workflows are merged and the GitHub App is configured in both repositories.
-Install the App for both `krkn-chaos/website` and `krkn-chaos/krkn-operator`
-with Contents and Pull requests write permissions. The Website Action creates
-the Operator metadata PR; the receiver creates the Website snapshot PR. The
-Operator notifier requests only Website Contents write for dispatch. Configure the existing
-`DOC_SYNC_BOT_APP_ID` variable and `DOC_SYNC_BOT_APP_PRIVATE_KEY` secret as
-required by each workflow; do not substitute a personal access token.
+To correct an already published version, open a Website PR that edits only
+that release's archived content under
+`content/en/docs/krkn-operator/versions/vX.Y.Z/` and its release-owned data or
+assets under `data/operator_docs/releases/vX.Y.Z/` or
+`static/operator-docs/vX.Y.Z/`. Update
+`operator-docs/snapshots/vX.Y.Z.json` hashes and add a correction record with
+the time, reason, and affected paths. Preserve the original source commits and
+provenance. If the correction should also apply to future releases, separately
+make the same change in the editable authoring tree. A correction PR does not
+change the default version.
 
-For the initial rollout, merge the Website versioning PR with the preserved
-v1.0.0 snapshot and deploy its receiver first. Configure and test the App, then
-merge the Operator notifier PR. The stable version lookup fix in Website PR
-#660 is independent and may merge separately. After #680 is merged and
-deployed, rebase source PR #681 onto updated `main`, review its preview, and
-merge it. That merge automatically prepares the initial 1.1.0 snapshot PR.
-For subsequent releases, merge the generated Operator metadata PR before
-creating the tag, then review and merge the generated Website snapshot PR.
+## Automation setup and retries
 
-## Local previews and checks
+The Website receiver runs trusted code from Website `main` and reads
+documentation from the pinned Website `main` commit. Install the
+documentation GitHub App on `krkn-chaos/website` and `krkn-chaos/krkn-operator`
+with the repository permissions required by each workflow. Configure the
+existing `DOC_SYNC_BOT_APP_ID` variable and
+`DOC_SYNC_BOT_APP_PRIVATE_KEY` secret. The Website workflow needs Contents and
+Pull requests write permission to open its snapshot PR. Do not use a personal
+access token fallback.
 
-Use the supported npm commands so snapshot integrity and generated mounts are
-prepared:
+The Operator notifier dispatch payload contains only `operator_tag`; the
+Website fetches release, current source commit, and chart data itself. Duplicate
+notifications reuse the same deterministic Website branch and PR. If
+automation fails, fix the prerequisite named in the workflow summary and rerun
+`Prepare Operator documentation release PR` with the same tag. The manual
+workflow accepts only the tag; source commit and chart inputs are still
+resolved and verified automatically.
+
+## Local checks
+
+Use the supported npm commands so Hugo receives the generated content mounts
+and snapshot validation:
 
 ```text
 npm run check:operator-docs
@@ -121,31 +125,7 @@ npm run build:production
 NETLIFY=false LINK_CHECK_SOFT_FAIL=0 npm run check:links
 ```
 
-`npm run preview:operator-source` is labeled as an unpublished authoring
-preview. Use a prepared production or deployment preview to verify the
-published experience. A raw `hugo` invocation bypasses snapshot preparation
-and integrity checks.
-
-## Retries, corrections, and rollback
-
-If an Action fails, its summary and logs identify the missing prerequisite.
-Fix that issue and rerun the same workflow for the same tag. To retry metadata
-preparation, run `Prepare Operator release documentation metadata` with the
-merged source PR number; no source SHA or chart-version input is needed. The receiver
-retries temporary release or chart publication delays and does not open a
-partial snapshot PR. A tag already registered with different provenance fails
-rather than being overwritten or retagged.
-
-Normal website builds validate snapshots and never regenerate them. A content
-correction requires a reviewed Website PR that updates the affected captured
-content or data, recalculates integrity hashes, and adds a correction record
-with the time, affected paths, and reason. Preserve the original source
-commits. For a deployment failure, restore the previous successful deployment
-and keep published snapshots. To hold back the default, make an explicit
-reviewed registry change.
-
-The capture pipeline permits the `notice` and `roadmap` shortcodes and captures
-roadmap data and known Operator assets when used. Extend the capture logic and
-integrity tests before adding another shortcode, parameter/CRD file, local
-media location, or other mutable dependency. Old snapshots must not fetch
-current data during builds.
+A raw `hugo` command bypasses snapshot preparation and integrity checks. The
+`preview:operator-source` command is only for authors to inspect unpublished
+source; use a production build or Website PR preview to check what readers
+will see.

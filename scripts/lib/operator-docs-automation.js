@@ -14,27 +14,6 @@ const BOT_GIT_NAME = 'github-actions[bot]';
 const BOT_GIT_EMAIL = '41898282+github-actions[bot]@users.noreply.github.com';
 const OPERATOR_TAG_PATTERN = /^v(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/;
 
-function assertBootstrapInputsAllowed(registry, tag, bootstrapInputs) {
-  if (!bootstrapInputs || !registry?.adoption_boundary_published_at) return;
-
-  const registeredRelease = (registry.releases || []).find((release) => release.tag === tag);
-  if (!registeredRelease) {
-    const adoptedRelease = (registry.releases || []).some((release) =>
-      Date.parse(release.published_at) >= Date.parse(registry.adoption_boundary_published_at)
-    );
-    if (adoptedRelease) {
-      throw new Error('bootstrap inputs are only accepted before the adoption boundary');
-    }
-    return;
-  }
-  if (
-    registeredRelease.website_commit !== bootstrapInputs.website_commit ||
-    registeredRelease.helm_chart_version !== bootstrapInputs.helm_chart_version
-  ) {
-    throw new Error('bootstrap inputs do not match the registered bootstrap provenance');
-  }
-}
-
 function mergeMainWithBotIdentity(repoRoot, runGit) {
   if (typeof runGit !== 'function') throw new Error('runGit must be a function');
   runGit(repoRoot, ['config', 'user.name', BOT_GIT_NAME]);
@@ -129,6 +108,15 @@ function assertSameReleaseProvenance(existing, incoming) {
   }
 }
 
+function selectRegisteredRelease(tag, mainRegistry, pendingRegistry) {
+  const mainRelease = (mainRegistry?.releases || []).find((entry) => entry.tag === tag);
+  const pendingRelease = (pendingRegistry?.releases || []).find((entry) => entry.tag === tag);
+  if (mainRelease && pendingRelease) {
+    assertSameReleaseProvenance(mainRelease, pendingRelease);
+  }
+  return mainRelease || pendingRelease || null;
+}
+
 function isBeforeAdoptionBoundary(release, boundary) {
   if (typeof boundary !== 'string' || !Number.isFinite(Date.parse(boundary))) {
     throw new Error('the published-release adoption boundary is missing or invalid');
@@ -139,8 +127,7 @@ function isBeforeAdoptionBoundary(release, boundary) {
   return Date.parse(release.published_at) <= Date.parse(boundary);
 }
 
-function shouldIgnoreReleaseAtAdoptionBoundary(registry, release, bootstrapInputs) {
-  assertBootstrapInputsAllowed(registry, release?.tag, bootstrapInputs);
+function shouldIgnoreReleaseAtAdoptionBoundary(registry, release) {
   const registeredRelease = (registry?.releases || []).find(
     (entry) => entry.tag === release?.tag
   );
@@ -150,9 +137,6 @@ function shouldIgnoreReleaseAtAdoptionBoundary(registry, release, bootstrapInput
   }
   const boundary = registry?.adoption_boundary_published_at;
   if (boundary) return isBeforeAdoptionBoundary(release, boundary);
-  if (!bootstrapInputs) {
-    throw new Error('the adoption boundary has not been bootstrapped; use the manual workflow with explicit website commit and chart inputs');
-  }
   return false;
 }
 
@@ -213,7 +197,6 @@ function buildPullRequestBody(release, integrity) {
 }
 
 module.exports = {
-  assertBootstrapInputsAllowed,
   assertSameReleaseProvenance,
   assertTrustedReleaseBranch,
   buildPullRequestBody,
@@ -223,6 +206,7 @@ module.exports = {
   releaseBranchName,
   sameReleaseProvenance,
   selectExistingPullRequest,
+  selectRegisteredRelease,
   stageSnapshotChanges,
   shouldIgnoreReleaseAtAdoptionBoundary,
 };

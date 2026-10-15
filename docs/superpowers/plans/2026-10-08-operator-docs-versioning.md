@@ -1,25 +1,25 @@
 # Operator documentation release versioning — implementation plan
 
-## Execution status — 2026-10-09
+## Execution status — 2026-10-15
 
-- Website infrastructure is on local branch `operator-docs-versioning` in
-  `/Users/sahil/website-1`, updating PR #680. Operator integration is separate
-  in `/private/tmp/krkn-operator-docs-fixes`, updating PR #158.
+- Website edits are in progress in `/Users/sahil/website-1` and are local,
+  uncommitted changes. No merge or deployment is part of this work.
+- Production with registered snapshots excludes
+  `content/en/docs/krkn-operator/` and renders registered release folders from
+  `content/en/docs/krkn-operator/versions/`. Legacy unversioned paths are
+  redirect stubs.
 - Stable tags only: both `prerelease: false` and `vMAJOR.MINOR.PATCH` are required.
 - Frozen v1.0.0 preserves Website commit `7c35229ddbec37d65ef6a9c53945443b6fa8bf6e`.
   The inclusive v1.0.10 adoption cutoff is `2026-09-26T13:03:34Z`.
-- Source PR #681 prepares v1.1.0 in the editable authoring tree. The published
-  v1.1.0 tag predates metadata; its source merge triggers the initial bootstrap
-  automatically. Never assign the new source pages to the v1.0.0 snapshot.
-- Merged source PRs automatically prepare Operator metadata PRs targeting
-  `release-MAJOR.MINOR`. Humans review and merge before release tagging.
-- Production rendering and strict link verification passed: 342 pages and
-  301 links with no broken links. Local tests are rerun before pushing.
-- Beads is a local-machine tracker, with no remote synchronization configured.
-- Keep the repository PRs separate. Do not merge, deploy, or wait for GitHub CI.
+- Release preparation is serial. Any number of normal Website source PRs with
+  any branch names may update the authoring tree for the one upcoming release.
+  Keep that tree unchanged until its stable-release snapshot PR is merged; then
+  start preparing the following release. At stable release, the Website pins
+  current `main` and creates one reviewed snapshot PR. There is no Operator
+  metadata PR.
 
 The release handover in [`docs/operator-docs-versioning.md`](../../operator-docs-versioning.md)
-describes source review, generated metadata PRs, publication notifications, and
+describes the authoring-only source tree, automatic release capture, and
 reviewed snapshot PRs.
 
 This plan implements the approved design in [the companion specification](../specs/2026-10-08-operator-docs-versioning-design.md). The detailed user-provided final plan is authoritative for requirements; this file records its execution order and repository handoff.
@@ -33,9 +33,9 @@ This plan implements the approved design in [the companion specification](../spe
 - Admit only tags matching `vMAJOR.MINOR.PATCH` and GitHub releases with `prerelease: false`. Derive the default among merged entries by publication time and numeric release ID; never use `/releases/latest` or alphabetic tag ordering.
 - Keep site-wide search on the default Operator snapshot. Preserve all other products' content, navigation, search, and print behavior.
 - Keep the Operator repository changes separate from website changes. No merge or deployment is part of implementation.
-- For future releases, merge the Website authoring PR first, then review and merge
-  the generated Operator metadata PR before tagging. The generated
-  snapshot PR continues using `docs/operator-release/<tag>`.
+- For future releases, merge the Website authoring PRs first, then publish the
+  stable Operator release and chart. The generated Website snapshot PR uses
+  `docs/operator-release/<tag>`.
 
 ## Task 1 — Baseline, repository instructions, and planning artifacts
 
@@ -65,8 +65,8 @@ Create `data/operator_doc_versions.yaml`, `scripts/lib/operator-docs.js`, and `s
 Create `scripts/lib/operator-release-inputs.js` and focused tests; expose `resolveReleaseInputs` through the core helper.
 
 - Fetch the exact published, non-draft Operator release and resolve its tag to a commit.
-- Read `docs/website-release.yaml` at that tag. Select the record whose `operator_tag` exactly matches the tag, validate the schema, full Website SHA, and chart version. The one-time `v1.0.0` baseline is already pinned to its source commit and verified chart; normal automation ignores unregistered releases at or before the `v1.0.10` adoption cutoff.
-- Verify the website commit exists in canonical `krkn-chaos/website` and belongs to reviewed default-branch history.
+- Pin the current default-branch commit in canonical `krkn-chaos/website`; verify its full SHA and reviewed history. For retries of a registered tag, reuse the Website commit already recorded in the registry.
+- Verify the stable Operator release and published chart; derive chart version from the tag and compare both chart `version` and `appVersion`.
 - Fetch the explicitly versioned published OCI Helm chart and verify chart metadata maps to the requested Operator tag. Do not treat the source `Chart.yaml` as published chart evidence.
 - Record release ID, publication timestamp, Operator commit, website commit, chart reference/version, and evidence.
 - Use argument arrays for subprocesses. Retry temporarily missing release/chart inputs for at most five minutes; then fail with the missing prerequisite and create no partial PR.
@@ -156,25 +156,27 @@ Update the local offline-search template override, `scripts/build-search-index.j
 
 **Deliverable:** old snapshots do not duplicate current search results or receive unqualified assistant answers.
 
-## Task 11 — Cross-repository release notification and metadata validation
+## Task 11 — Cross-repository release notification and source pinning
 
-Operator repository changes (separate checkout): tag-keyed
-`docs/website-release.yaml`, release/chart preflight, and a notifier that runs
-after successful chart publication. Website changes:
+Operator repository notifier runs after successful chart publication. Website changes:
 `.github/workflows/operator-docs-release.yml`,
 `scripts/lib/operator-release-inputs.js`, `scripts/operator-docs-release-pr.js`,
 and focused tests.
 
-- The docs author opens a normal Website PR to `krkn-chaos/website:main`. After
-  it merges, the Website Action opens an Operator metadata PR recording its full
-  merge SHA and matching chart version against `release-MAJOR.MINOR`.
-- The receiver rejects prerelease tags and stable tags with missing or
-  mismatched metadata. Merge the metadata PR before the release tag is
-  created; automation never rewrites an existing tag.
+- The docs team may merge multiple ordinary Website PRs from any branch names
+  into the authoring tree for the one upcoming release. Branch names and PR
+  identities are not used by automation. Keep the authoring tree unchanged
+  until that release's Website snapshot PR is merged, then begin the next
+  release's docs.
+- After the stable Operator release and chart publish, dispatch only the tag.
+  The Website receiver pins current `main`, verifies that commit's history and
+  the published chart, and captures docs and assets from that commit. No
+  source branch naming convention, Operator metadata PR, or manual SHA/chart
+  input is required.
 - The default-branch chart-completion listener sends `operator-docs-release-ready`
   after publication succeeds. The Website receiver independently verifies
-  the published release, tag metadata, pinned Website commit, and chart before
-  capture. The notification payload supplies only the tag.
+  the stable release, pinned Website commit, and chart before capture. The
+  notification payload supplies only the tag.
 - Use a GitHub App token to dispatch to the canonical Website repository. Do
   not fall back to a PAT. Keep workflow code on trusted default branches and
   verify App permissions before enabling notifications.
@@ -201,8 +203,8 @@ Create `docs/operator-docs-versioning.md`; update Hugo build and link-check work
 
 - Add unit, automation, integrity, and isolated generated-site checks. Use synthetic releases only in fixtures.
 - Verify selector scoping, sidebar isolation, missing-article fallback, link/fragment behavior, exact redirects, API rule preservation, no authoring leakage, immutable content/data/media, installation pinning, browser/chatbot search policy, provenance, print traversal, preview baseURL, and no-JavaScript switching.
-- Document the Website source PR, automatically generated metadata PRs, automated
-  post-publication notification, generated snapshot PR, stable-only boundary,
+- Document Website source PRs, the automated post-publication notification,
+  generated snapshot PR, stable-only boundary,
   pinned Website commits, chart validation, retry, correction, rollback,
   local authoring preview, and dependency-extension rules.
 - Review desktop/mobile, light/dark, keyboard/screen-reader label, back/forward, deep links, screenshots/video, and release PR preview when available.
