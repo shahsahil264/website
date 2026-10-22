@@ -372,6 +372,7 @@ test('deploy preview shows pending roadmap at source URLs and keeps v1.1.0 froze
   const readPreview = (relativePath) => fs.readFileSync(path.join(repoRoot, 'public-preview', relativePath), 'utf8');
   const upcomingRoadmap = readPreview('docs/krkn-operator/releases/index.html');
   const frozenRoadmap = readPreview('docs/krkn-operator/versions/v1.1.0/releases/index.html');
+  const otherProduct = readPreview('docs/scenarios/current/index.html');
   const redirects = readPreview('_redirects');
   const searchPath = upcomingRoadmap.match(/<link rel="test-search-index" href="([^"]+)"/)?.[1];
   const searchDocuments = searchPath && JSON.parse(readPreview(searchPath.replace(/^\//, '')));
@@ -386,6 +387,8 @@ test('deploy preview shows pending roadmap at source URLs and keeps v1.1.0 froze
   assert.doesNotMatch(frozenRoadmap, /v1\.2\.0/);
   assert.doesNotMatch(frozenRoadmap, /Upcoming release roadmap/);
   assert.doesNotMatch(frozenRoadmap, /Upcoming Operator documentation preview/);
+  assert.match(frozenRoadmap, /This page documents Krkn Operator <strong>v1\.1\.0<\/strong>/);
+  assert.doesNotMatch(otherProduct, /Upcoming Operator documentation preview|Operator documentation release/);
   assert.doesNotMatch(upcomingRoadmap, /window\.location\.replace/);
   assert.doesNotMatch(upcomingRoadmap, /\/js\/chatbot\.js/);
   assert.match(frozenRoadmap, /\/js\/chatbot\.js/);
